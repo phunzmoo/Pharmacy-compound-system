@@ -1,0 +1,1863 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ระบบคำนวณยาผลิต - รพ.พระนครศรีอยุธยา</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fdf8f3;
+  --bg-2:#f6ecdf;
+  --ink:#2d2418;
+  --ink-soft:#5b4d3a;
+  --ink-faint:#8a7a63;
+  --line:#e8d9c2;
+  --line-soft:#f0e3cf;
+  --paper:#fffdf8;
+  --rose:#e8a4a4;
+  --rose-deep:#c47373;
+  --rose-soft:#fce6e0;
+  --sage:#a3b89a;
+  --sage-deep:#6f8a64;
+  --sage-soft:#e3ecdb;
+  --honey:#e3b169;
+  --honey-soft:#f8e7c6;
+  --plum:#9d7aa3;
+  --plum-soft:#ecdef0;
+  --sky:#94b5cf;
+  --sky-soft:#dceaf3;
+  --warn:#c4541d;
+  --warn-soft:#fbe3d2;
+  --danger:#a8322e;
+  --danger-soft:#f8d8d4;
+  --good:#5b7d4f;
+  --good-soft:#dcebd1;
+  --shadow:0 1px 0 rgba(45,36,24,0.04), 0 8px 24px -12px rgba(45,36,24,0.18);
+  --shadow-lg:0 2px 0 rgba(45,36,24,0.06), 0 24px 48px -20px rgba(45,36,24,0.22);
+  --r:14px;
+  --r-sm:8px;
+  --serif:'Fraunces',Georgia,serif;
+  --sans:'IBM Plex Sans Thai',-apple-system,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+body{
+  background-image:
+    radial-gradient(circle at 20% 0%, rgba(232,164,164,0.08), transparent 40%),
+    radial-gradient(circle at 80% 100%, rgba(163,184,154,0.10), transparent 50%),
+    var(--bg);
+  min-height:100vh;
+}
+.app{max-width:1280px;margin:0 auto;padding:32px 24px 80px}
+header.brand{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--line)}
+.brand-id h1{font-family:var(--serif);font-weight:600;font-size:36px;letter-spacing:-0.02em;line-height:1.05}
+.brand-id h1 em{font-style:italic;color:var(--rose-deep);font-weight:500}
+.brand-id .sub{margin-top:6px;color:var(--ink-faint);font-size:14px;letter-spacing:0.02em}
+.brand-meta{text-align:right;font-size:13px;color:var(--ink-faint);font-feature-settings:'tnum'}
+.brand-meta b{display:block;color:var(--ink);font-weight:500;font-size:14px}
+
+nav.tabs{display:flex;gap:4px;margin-bottom:24px;background:var(--bg-2);padding:5px;border-radius:var(--r);width:fit-content;border:1px solid var(--line);flex-wrap:wrap}
+nav.tabs button{font-family:var(--sans);font-size:15px;font-weight:500;padding:11px 22px;border:none;background:transparent;color:var(--ink-soft);border-radius:10px;cursor:pointer;transition:all .18s;min-height:44px}
+nav.tabs button:hover{color:var(--ink)}
+nav.tabs button.active{background:var(--paper);color:var(--ink);box-shadow:var(--shadow)}
+
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:26px;margin-bottom:22px;box-shadow:var(--shadow)}
+.card h2{font-family:var(--serif);font-weight:600;font-size:24px;margin-bottom:4px;letter-spacing:-0.01em}
+.card .subtitle{color:var(--ink-faint);font-size:14px;margin-bottom:22px}
+.card h3{font-family:var(--serif);font-weight:600;font-size:18px;margin:22px 0 12px;color:var(--ink)}
+
+.grid{display:grid;gap:18px}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+.grid-4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:780px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}}
+
+label{display:block;font-size:14px;font-weight:500;color:var(--ink-soft);margin-bottom:7px;letter-spacing:0.01em}
+label .req{color:var(--rose-deep);margin-left:2px}
+input[type=text],input[type=number],input[type=date],select,textarea{
+  width:100%;font-family:var(--sans);font-size:16px;padding:13px 14px;
+  border:1px solid var(--line);background:var(--bg);color:var(--ink);
+  border-radius:var(--r-sm);transition:all .15s;font-feature-settings:'tnum';
+  min-height:46px
+}
+textarea{min-height:auto}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose-deep);background:var(--paper);box-shadow:0 0 0 3px var(--rose-soft)}
+input:disabled{background:var(--line-soft);color:var(--ink-faint);cursor:not-allowed}
+
+.btn{font-family:var(--sans);font-weight:500;font-size:15.5px;padding:12px 22px;border-radius:var(--r-sm);cursor:pointer;transition:all .15s;border:1px solid transparent;display:inline-flex;align-items:center;gap:6px;min-height:46px}
+.btn-primary{background:var(--ink);color:var(--paper)}
+.btn-primary:hover{background:#1a140a}
+.btn-secondary{background:var(--paper);color:var(--ink);border-color:var(--line)}
+.btn-secondary:hover{background:var(--bg-2)}
+.btn-rose{background:var(--rose-deep);color:var(--paper)}
+.btn-rose:hover{background:#a55c5c}
+.btn-ghost{background:transparent;color:var(--ink-soft)}
+.btn-ghost:hover{color:var(--ink);background:var(--bg-2)}
+.btn-sm{font-size:14px;padding:9px 16px;min-height:40px}
+.btn-danger{background:transparent;color:var(--danger);border-color:var(--danger-soft)}
+.btn-danger:hover{background:var(--danger-soft)}
+
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.row-end{justify-content:flex-end}
+.row-between{justify-content:space-between}
+
+.calc-out{background:linear-gradient(180deg,var(--bg-2),var(--paper));border:1px solid var(--line);border-radius:var(--r);padding:0;overflow:hidden;margin-top:8px}
+.calc-out h3{margin:0;padding:20px 24px 6px;font-size:19px}
+.calc-out .calc-summary{padding:6px 24px 18px;border-bottom:1px solid var(--line);font-size:14px;color:var(--ink-soft)}
+.calc-row{display:grid;grid-template-columns:1fr auto;gap:12px;padding:13px 24px;border-bottom:1px dashed var(--line-soft);align-items:baseline}
+.calc-row:last-child{border-bottom:none}
+.calc-row .k{font-size:14.5px;color:var(--ink-soft)}
+.calc-row .v{font-family:var(--serif);font-weight:600;font-size:21px;font-feature-settings:'tnum';color:var(--ink)}
+.calc-row .v small{font-family:var(--sans);font-weight:400;font-size:13px;color:var(--ink-faint);margin-left:3px}
+.calc-row.highlight{background:var(--rose-soft)}
+.calc-row.highlight .v{color:var(--rose-deep);font-size:26px}
+
+.schedule-table{width:100%;border-collapse:separate;border-spacing:0;margin-top:14px;font-size:15.5px;background:var(--paper);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.schedule-table th{background:var(--bg-2);text-align:left;padding:13px 16px;font-weight:600;font-size:13px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.06em;border-bottom:1px solid var(--line)}
+.schedule-table td{padding:15px 16px;border-bottom:1px solid var(--line-soft);font-feature-settings:'tnum';vertical-align:top}
+.schedule-table tr:last-child td{border-bottom:none}
+.schedule-table .visit-num{font-family:var(--serif);font-weight:600;font-size:20px;color:var(--rose-deep)}
+.schedule-table .visit-final{background:var(--sage-soft)}
+.schedule-table .visit-final .visit-num{color:var(--sage-deep)}
+.schedule-table small{display:block;color:var(--ink-faint);font-size:12.5px;margin-top:3px}
+
+.alerts{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.alert{display:flex;gap:12px;padding:13px 16px;border-radius:var(--r-sm);font-size:15px;align-items:flex-start;border:1px solid;line-height:1.55}
+.alert .ico{flex-shrink:0;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;margin-top:1px}
+.alert b{font-weight:600}
+.alert.danger{background:var(--danger-soft);border-color:#e9b8b3;color:#7a2520}
+.alert.danger .ico{background:var(--danger);color:white}
+.alert.warn{background:var(--warn-soft);border-color:#eecaa9;color:#7e3611}
+.alert.warn .ico{background:var(--warn);color:white}
+.alert.info{background:var(--sky-soft);border-color:#bcd4e2;color:#3e5e75}
+.alert.info .ico{background:var(--sky);color:white}
+.alert.good{background:var(--good-soft);border-color:#bdd1ad;color:#3a5530}
+.alert.good .ico{background:var(--good);color:white}
+
+.drug-list{display:grid;grid-template-columns:1fr;gap:6px}
+.drug-row{display:grid;grid-template-columns:2.2fr 1fr 1fr 1fr 100px;gap:12px;padding:12px 16px;background:var(--paper);border:1px solid var(--line);border-radius:var(--r-sm);align-items:center;font-size:15.5px}
+.drug-row.head{background:var(--bg-2);font-weight:600;font-size:13px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.05em}
+.drug-row.head:hover{background:var(--bg-2)}
+.drug-row:hover{border-color:var(--ink-faint)}
+.drug-row .name{font-weight:500}
+.drug-row .num{font-feature-settings:'tnum';color:var(--ink-soft)}
+.drug-row .actions{display:flex;gap:4px;justify-content:flex-end}
+.drug-row .icon-btn{width:34px;height:34px;border-radius:6px;border:none;background:transparent;cursor:pointer;color:var(--ink-faint);font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.drug-row .icon-btn:hover{background:var(--bg-2);color:var(--ink)}
+.drug-row .icon-btn.del:hover{background:var(--danger-soft);color:var(--danger)}
+@media(max-width:780px){.drug-row{grid-template-columns:1fr 1fr;gap:8px}.drug-row.head{display:none}.drug-row .actions{grid-column:span 2}}
+
+.holiday-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-top:16px}
+.holiday-chip{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--paper);border:1px solid var(--line);border-radius:var(--r-sm);font-size:14.5px}
+.holiday-chip .date{font-feature-settings:'tnum';font-weight:500}
+.holiday-chip .name{color:var(--ink-soft);font-size:13px}
+.holiday-chip button{background:transparent;border:none;color:var(--ink-faint);cursor:pointer;font-size:16px;padding:4px 8px;border-radius:4px;min-width:32px;min-height:32px}
+.holiday-chip button:hover{color:var(--danger);background:var(--danger-soft)}
+
+.modal-bg{position:fixed;inset:0;background:rgba(45,36,24,0.45);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+.modal-bg.show{display:flex}
+.modal{background:var(--paper);border-radius:var(--r);padding:30px;max-width:540px;width:100%;box-shadow:var(--shadow-lg);max-height:90vh;overflow-y:auto;font-size:16px}
+.modal h3{font-family:var(--serif);font-size:22px;font-weight:600;margin-bottom:18px}
+
+.tag{display:inline-block;padding:3px 10px;font-size:12.5px;font-weight:500;background:var(--bg-2);color:var(--ink-soft);border-radius:10px;letter-spacing:0.02em}
+.tag.rose{background:var(--rose-soft);color:var(--rose-deep)}
+.tag.sage{background:var(--sage-soft);color:var(--sage-deep)}
+.tag.honey{background:var(--honey-soft);color:#8a5a1f}
+
+.config-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--line-soft);gap:12px;flex-wrap:wrap}
+.config-row:last-child{border-bottom:none}
+.config-row .lbl b{display:block;font-size:15.5px;font-weight:500}
+.config-row .lbl small{color:var(--ink-faint);font-size:13px}
+.config-row input[type=number]{width:100px;text-align:right}
+
+.audit-row{display:grid;grid-template-columns:160px 120px 1fr 100px;gap:14px;padding:12px 0;border-bottom:1px solid var(--line-soft);font-size:14.5px}
+.audit-row .ts{color:var(--ink-faint);font-feature-settings:'tnum';font-size:13px}
+.audit-row .act{font-weight:500}
+@media(max-width:780px){.audit-row{grid-template-columns:1fr}.audit-row .ts{font-size:12px}}
+
+.print-only{display:none}
+
+/* ============================================================
+   ใบนัดรับยา / ใบค้างจ่ายยา — A4 portrait
+   ============================================================ */
+.slip-modal{position:fixed;inset:0;background:rgba(45,36,24,0.55);backdrop-filter:blur(4px);display:none;align-items:flex-start;justify-content:center;z-index:200;padding:24px;overflow-y:auto}
+.slip-modal.show{display:flex}
+.slip-modal-inner{max-width:680px;width:100%;background:transparent}
+.slip-toolbar{background:var(--paper);border-radius:var(--r);padding:14px 18px;margin-bottom:14px;box-shadow:var(--shadow-lg);display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.slip-toolbar h3{font-family:var(--serif);font-size:18px;font-weight:600;margin:0;flex:1;min-width:200px}
+.slip-toolbar .grow{flex:1}
+.slip-extra-fields{background:var(--paper);border-radius:var(--r);padding:16px 18px;margin-bottom:14px;box-shadow:var(--shadow-lg);display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.slip-extra-fields label{font-size:13px;margin-bottom:5px}
+.slip-extra-fields input{font-size:14.5px;padding:9px 11px;min-height:auto}
+
+/* A4 paper canvas */
+.slip-paper{
+  width:210mm;
+  min-height:297mm;
+  background:white;
+  margin:0 auto;
+  padding:18mm 18mm 16mm 18mm;
+  box-shadow:0 8px 40px rgba(0,0,0,0.25);
+  font-family:'Sarabun',sans-serif;
+  color:#1a1a1a;
+  position:relative;
+  font-size:13pt;
+  line-height:1.55;
+  box-sizing:border-box;
+}
+.slip-watermark{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%) rotate(-28deg);
+  font-family:'Sarabun',sans-serif;
+  font-size:90pt;
+  font-weight:700;
+  color:rgba(120,90,80,0.06);
+  pointer-events:none;
+  white-space:nowrap;
+  letter-spacing:0.05em;
+  z-index:0;
+}
+.slip-paper > *{position:relative;z-index:1}
+
+.slip-corner{position:absolute;top:0;left:0;width:54mm;height:6mm;background:linear-gradient(90deg,#7a3a3a,#c47373);z-index:2}
+.slip-corner.right{left:auto;right:0;background:linear-gradient(90deg,#c47373,#7a3a3a)}
+
+.slip-header{text-align:center;margin-bottom:7mm;padding-top:4mm}
+.slip-header .doc-no{font-size:10.5pt;color:#666;text-align:right;margin-bottom:3mm;font-feature-settings:'tnum'}
+.slip-header h1{font-family:'Sarabun',sans-serif;font-size:26pt;font-weight:700;letter-spacing:0.04em;color:#1a1a1a;margin-bottom:2mm}
+.slip-header .hospital{font-size:15pt;font-weight:600;color:#333}
+.slip-header .contact{font-size:11.5pt;color:#555;margin-top:1.5mm;line-height:1.4}
+.slip-header .pickup-time{font-size:11.5pt;color:#7a3a3a;font-weight:600;margin-top:1.5mm}
+.slip-divider{border:none;border-top:0.7pt solid #999;margin:5mm 0}
+
+.slip-patient{margin-bottom:5mm}
+.slip-patient-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5mm 12mm;font-size:12.5pt}
+.slip-patient-grid .field{display:flex;gap:4mm;align-items:baseline;padding:1.6mm 0;border-bottom:0.4pt dotted #bbb}
+.slip-patient-grid .field-full{grid-column:span 2}
+.slip-patient-grid .lbl{color:#555;flex-shrink:0;font-weight:500}
+.slip-patient-grid .val{font-weight:600;color:#000;flex:1}
+.slip-patient-grid .val.empty{color:#999;font-weight:400;font-style:italic}
+
+.slip-section-title{font-size:13pt;font-weight:700;color:#1a1a1a;margin:5mm 0 2.5mm;padding-bottom:1.5mm;border-bottom:0.7pt solid #555;letter-spacing:0.02em}
+
+.slip-table{width:100%;border-collapse:collapse;font-size:11.5pt;margin-bottom:4mm}
+.slip-table thead th{
+  background:#f3ebe1;
+  border:0.5pt solid #888;
+  padding:2.8mm 3mm;
+  text-align:left;
+  font-weight:700;
+  font-size:11pt;
+  color:#1a1a1a;
+}
+.slip-table tbody td{
+  border:0.5pt solid #aaa;
+  padding:3mm 3mm;
+  vertical-align:top;
+  word-break:break-word;
+}
+.slip-table .col-no{width:11mm;text-align:center}
+.slip-table .col-qty{width:36mm;text-align:right;font-feature-settings:'tnum';font-weight:600}
+.slip-table .col-note{width:42mm;font-size:10.5pt;color:#444}
+.slip-table .col-sig{width:42mm;text-align:center;vertical-align:middle}
+.slip-table .col-drug{font-weight:500}
+.slip-table .col-drug small{display:block;font-size:10pt;color:#666;font-weight:400;margin-top:0.8mm}
+.slip-table .sig-cell{
+  min-height:14mm;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  align-items:center;
+  padding-bottom:1.5mm;
+}
+.slip-table .sig-line-inline{
+  width:90%;
+  border-bottom:0.6pt solid #555;
+  height:9mm;
+}
+.slip-table .sig-hint{
+  font-size:8.5pt;
+  color:#888;
+  margin-top:1mm;
+  font-weight:400;
+}
+
+.slip-summary-line{font-size:11.5pt;color:#444;margin-top:3mm;padding:2.5mm 4mm;background:#fbf6ef;border-left:2.5pt solid #c47373;font-style:italic}
+
+.slip-instructions{margin-top:7mm;font-size:11.5pt;color:#333;line-height:1.7}
+.slip-instructions b{font-size:12pt;color:#1a1a1a;display:block;margin-bottom:2mm}
+.slip-instructions ul{padding-left:7mm;margin:0}
+.slip-instructions li{margin-bottom:1mm}
+
+.slip-signatures{
+  margin-top:auto;
+  padding-top:12mm;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12mm;
+  font-size:11.5pt;
+}
+.slip-sig-block{text-align:center}
+.slip-sig-line{border-bottom:0.7pt solid #555;height:14mm;margin-bottom:2mm}
+.slip-sig-label{color:#555;font-size:11pt}
+.slip-sig-name{color:#1a1a1a;font-weight:500;font-size:12pt;margin-bottom:0.5mm}
+.slip-sig-date{color:#666;font-size:10pt;margin-top:1mm}
+
+.slip-footer-meta{
+  margin-top:5mm;
+  padding-top:2.5mm;
+  border-top:0.4pt dotted #aaa;
+  font-size:9.5pt;
+  color:#777;
+  display:flex;
+  justify-content:space-between;
+}
+.slip-paper-flex{display:flex;flex-direction:column;min-height:260mm}
+.slip-paper-flex .slip-content{flex:1}
+
+/* PRINT — เฉพาะใบนัด */
+@media print{
+  @page{size:A4 portrait;margin:0}
+
+  /* เมื่ออยู่ในโหมดพิมพ์ใบนัด — ซ่อนทุกอย่างยกเว้น slip-paper */
+  body.printing-slip{
+    background:white !important;
+    margin:0 !important;
+    padding:0 !important;
+  }
+  body.printing-slip .app{display:none !important}
+  body.printing-slip > *:not(#slipModal){display:none !important}
+
+  /* แสดง slip-modal โดยไม่สนใจ .show class */
+  body.printing-slip .slip-modal{
+    display:block !important;
+    position:static !important;
+    background:white !important;
+    backdrop-filter:none !important;
+    padding:0 !important;
+    margin:0 !important;
+    inset:auto !important;
+    overflow:visible !important;
+  }
+  body.printing-slip .slip-modal-inner{
+    max-width:none !important;
+    margin:0 !important;
+    padding:0 !important;
+  }
+  body.printing-slip .slip-toolbar,
+  body.printing-slip .slip-extra-fields{
+    display:none !important;
+  }
+
+  /* slip-paper ที่จะถูกพิมพ์จริง */
+  body.printing-slip .slip-paper{
+    display:block !important;
+    box-shadow:none !important;
+    margin:0 !important;
+    width:210mm !important;
+    min-height:295mm !important;
+    page-break-after:avoid !important;
+    page-break-inside:avoid !important;
+    position:relative !important;
+  }
+  body.printing-slip .slip-watermark{color:rgba(120,90,80,0.04) !important}
+
+  /* ห้าม print rules ของระบบเดิมส่งผลตอนพิมพ์ใบนัด */
+  body.printing-slip header.brand,
+  body.printing-slip nav.tabs,
+  body.printing-slip .card,
+  body.printing-slip .tab-content{display:none !important}
+}
+
+/* PRINT — โหมดปกติ (ใบสรุปเดิม) เมื่อไม่ใช่ printing-slip */
+@media print{
+  body:not(.printing-slip){background:white}
+  body:not(.printing-slip) .app{padding:0;max-width:none}
+  body:not(.printing-slip) header.brand,
+  body:not(.printing-slip) nav.tabs,
+  body:not(.printing-slip) .no-print,
+  body:not(.printing-slip) button,
+  body:not(.printing-slip) .slip-modal{display:none !important}
+  body:not(.printing-slip) .card{box-shadow:none;border:1px solid #ccc;page-break-inside:avoid}
+  body:not(.printing-slip) .print-only{display:block}
+  body:not(.printing-slip) .schedule-table{font-size:11pt}
+}
+
+.print-only{display:none}
+.calc-explain{background:var(--honey-soft);border-left:3px solid var(--honey);padding:12px 16px;margin-top:12px;border-radius:0 var(--r-sm) var(--r-sm) 0;font-size:14px;color:#5d4318;font-feature-settings:'tnum';line-height:1.6}
+.calc-explain code{background:rgba(255,255,255,0.6);padding:2px 6px;border-radius:3px;font-family:'Courier New',monospace;font-size:13.5px}
+
+.empty{text-align:center;padding:36px;color:var(--ink-faint);font-style:italic;font-family:var(--serif);font-size:16px}
+hr.soft{border:none;border-top:1px solid var(--line-soft);margin:22px 0}
+.kbd{font-family:var(--serif);font-style:italic;color:var(--rose-deep)}
+.field-group{display:flex;align-items:stretch;gap:0}
+.field-group input{border-top-right-radius:0;border-bottom-right-radius:0;border-right:none}
+.field-group .unit{display:flex;align-items:center;padding:0 14px;background:var(--bg-2);border:1px solid var(--line);border-left:none;border-radius:0 var(--r-sm) var(--r-sm) 0;color:var(--ink-soft);font-size:14.5px;min-height:46px}
+
+@media(max-width:780px){
+  .app{padding:20px 14px 60px}
+  header.brand{flex-direction:column;align-items:flex-start;gap:10px}
+  .brand-meta{text-align:left}
+  .brand-id h1{font-size:30px}
+  .card{padding:20px}
+  .card h2{font-size:21px}
+  nav.tabs{width:100%;justify-content:flex-start;overflow-x:auto}
+  .grid{gap:14px}
+  .schedule-table{font-size:14px}
+  .schedule-table th,.schedule-table td{padding:12px 10px}
+  .btn{width:auto}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<header class="brand no-print">
+  <div class="brand-id">
+    <h1>ระบบคำนวณ<em>ยาผลิต</em></h1>
+    <div class="sub">Compounded Medication Dispensing System · งานเภสัชกรรมผู้ป่วยใน · รพ.พระนครศรีอยุธยา</div>
+  </div>
+  <div class="brand-meta">
+    <b id="todayDisplay">—</b>
+    เวอร์ชัน 1.0
+  </div>
+</header>
+
+<nav class="tabs no-print">
+  <button class="active" data-tab="calc">คำนวณ</button>
+  <button data-tab="drugs">บัญชียา</button>
+  <button data-tab="holidays">วันหยุด</button>
+  <button data-tab="config">ตั้งค่า</button>
+  <button data-tab="audit">บันทึก</button>
+</nav>
+
+<!-- ============ CALCULATION TAB ============ -->
+<section id="tab-calc" class="tab-content">
+
+<div class="card">
+  <h2>ข้อมูลผู้ป่วย & ใบสั่งยา</h2>
+  <div class="subtitle">กรอกข้อมูลให้ครบ ระบบจะคำนวณจำนวนขวด · ตารางนัด · ตรวจสอบความปลอดภัยอัตโนมัติ</div>
+
+  <div class="grid grid-3">
+    <div>
+      <label>ชื่อ-สกุล ผู้ป่วย <small style="color:var(--ink-faint);font-size:12px;font-weight:400">(ไม่บังคับ)</small></label>
+      <input type="text" id="patientName" placeholder="ด.ช./ด.ญ. ...">
+    </div>
+    <div>
+      <label>HN <small style="color:var(--ink-faint);font-size:12px;font-weight:400">(ไม่บังคับ)</small></label>
+      <input type="text" id="patientHN" placeholder="—">
+    </div>
+    <div>
+      <label>น้ำหนัก (kg)</label>
+      <input type="number" id="patientWeight" step="0.1" min="0" placeholder="—">
+    </div>
+  </div>
+
+  <hr class="soft">
+
+  <div class="grid grid-3">
+    <div>
+      <label>ยาที่จะจ่าย <span class="req">*</span></label>
+      <select id="drugSelect"><option value="">— เลือกยา —</option></select>
+    </div>
+    <div>
+      <label>วันที่จ่ายยาวันนี้ <span class="req">*</span></label>
+      <input type="date" id="dispenseDate">
+    </div>
+    <div>
+      <label>วันนัดพบแพทย์ครั้งถัดไป <span class="req">*</span></label>
+      <input type="date" id="appointmentDate">
+    </div>
+  </div>
+
+  <hr class="soft">
+
+  <h3>ขนาดยาและความถี่ <small style="font-weight:400;color:var(--ink-faint);font-size:12px;margin-left:8px">เลือกหน่วยที่หมอสั่งมา</small></h3>
+
+  <div class="grid grid-4">
+    <div>
+      <label>หน่วยที่สั่ง</label>
+      <select id="doseUnit">
+        <option value="mg">mg / dose</option>
+        <option value="ml">mL / dose</option>
+        <option value="mgkg">mg/kg / dose</option>
+      </select>
+    </div>
+    <div>
+      <label id="doseAmtLabel">ขนาดต่อครั้ง <span class="req">*</span></label>
+      <div class="field-group">
+        <input type="number" id="doseAmount" step="0.01" min="0" placeholder="0">
+        <div class="unit" id="doseAmtUnit">mg</div>
+      </div>
+    </div>
+    <div>
+      <label>ความถี่ <span class="req">*</span></label>
+      <select id="freq">
+        <option value="1">OD (วันละ 1 ครั้ง)</option>
+        <option value="2" selected>BID (วันละ 2 ครั้ง)</option>
+        <option value="3">TID (วันละ 3 ครั้ง)</option>
+        <option value="4">QID (วันละ 4 ครั้ง)</option>
+        <option value="6">q4h (วันละ 6 ครั้ง)</option>
+        <option value="custom">กำหนดเอง</option>
+      </select>
+    </div>
+    <div>
+      <label>ครั้ง/วัน</label>
+      <input type="number" id="freqCustom" min="1" max="24" value="2" disabled>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:18px;gap:12px">
+    <button class="btn btn-primary" onclick="calculate()">คำนวณ</button>
+    <button class="btn btn-ghost btn-sm" onclick="resetForm()">ล้างฟอร์ม</button>
+    <span id="calcStatus" style="margin-left:auto;color:var(--ink-faint);font-size:12px"></span>
+  </div>
+</div>
+
+<div id="resultArea"></div>
+
+</section>
+
+<!-- ============ DRUGS TAB ============ -->
+<section id="tab-drugs" class="tab-content" style="display:none">
+<div class="card">
+  <div class="row row-between" style="margin-bottom:6px">
+    <h2 style="margin:0">บัญชียาผลิต</h2>
+    <button class="btn btn-primary btn-sm" onclick="openDrugModal()">+ เพิ่มยา</button>
+  </div>
+  <div class="subtitle">ความเข้มข้น · ขนาดบรรจุ · ความคงตัวหลังผสม — แก้ไขได้ตลอดเวลา</div>
+
+  <div class="drug-list">
+    <div class="drug-row head">
+      <div>ชื่อยา</div>
+      <div>ความเข้มข้น</div>
+      <div>ขนาดบรรจุ</div>
+      <div>คงตัวหลังผสม</div>
+      <div></div>
+    </div>
+    <div id="drugList"></div>
+  </div>
+</div>
+</section>
+
+<!-- ============ HOLIDAYS TAB ============ -->
+<section id="tab-holidays" class="tab-content" style="display:none">
+<div class="card">
+  <div class="row row-between">
+    <div>
+      <h2 style="margin:0">ปฏิทินวันหยุดราชการ</h2>
+      <div class="subtitle" style="margin-top:4px">ระบบจะไม่นัดผู้ป่วยตรงเสาร์-อาทิตย์และวันหยุดเหล่านี้</div>
+    </div>
+    <button class="btn btn-secondary btn-sm" onclick="openHolidayModal()">+ เพิ่มวันหยุด</button>
+  </div>
+  <div class="holiday-grid" id="holidayList"></div>
+</div>
+</section>
+
+<!-- ============ CONFIG TAB ============ -->
+<section id="tab-config" class="tab-content" style="display:none">
+<div class="card">
+  <h2>ค่าตั้งค่าระบบ</h2>
+  <div class="subtitle">การเปลี่ยนแปลงจะมีผลกับการคำนวณครั้งถัดไป</div>
+
+  <div class="config-row">
+    <div class="lbl"><b>Buffer ปริมาตร</b><small>ปริมาตรเผื่อสูญเสียจากการรินยา (% ของปริมาตรที่คำนวณได้)</small></div>
+    <div class="field-group">
+      <input type="number" id="cfgBuffer" min="0" max="50" step="1" value="15">
+      <div class="unit">%</div>
+    </div>
+  </div>
+
+  <div class="config-row">
+    <div class="lbl"><b>Buffer วันนัดถัดไป</b><small>เผื่อยาให้ผู้ป่วยมีใช้ก่อนนัดล่วงหน้า เพื่อกันการขาดยา</small></div>
+    <div class="field-group">
+      <input type="number" id="cfgRefillBuffer" min="0" max="7" step="1" value="2">
+      <div class="unit">วัน</div>
+    </div>
+  </div>
+
+  <div class="config-row">
+    <div class="lbl"><b>เตือนเมื่อปริมาตรต่อครั้งสูงผิดปกติ</b><small>แจ้งเตือนถ้า mL ต่อครั้ง เกินค่านี้ (กันคีย์ผิด)</small></div>
+    <div class="field-group">
+      <input type="number" id="cfgMaxMlDose" min="1" step="1" value="20">
+      <div class="unit">mL</div>
+    </div>
+  </div>
+
+  <div class="config-row">
+    <div class="lbl"><b>เตือนเมื่อ refill บ่อยกว่า</b><small>แจ้งถ้าระยะนัดถัดไปสั้นกว่าค่านี้ (รบกวนผู้ป่วย)</small></div>
+    <div class="field-group">
+      <input type="number" id="cfgMinRefillDays" min="1" step="1" value="5">
+      <div class="unit">วัน</div>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:20px;gap:10px">
+    <button class="btn btn-primary btn-sm" onclick="saveConfig()">บันทึกการตั้งค่า</button>
+    <button class="btn btn-ghost btn-sm" onclick="resetConfig()">คืนค่าเริ่มต้น</button>
+  </div>
+</div>
+</section>
+
+<!-- ============ AUDIT TAB ============ -->
+<section id="tab-audit" class="tab-content" style="display:none">
+<div class="card">
+  <div class="row row-between">
+    <div>
+      <h2 style="margin:0">บันทึกการใช้งาน</h2>
+      <div class="subtitle" style="margin-top:4px">ตรวจสอบย้อนหลังได้ · ระบบเก็บ 200 รายการล่าสุด</div>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="clearAudit()">ล้างบันทึก</button>
+  </div>
+  <div id="auditList" style="margin-top:16px"></div>
+</div>
+</section>
+
+<!-- ============ MODALS ============ -->
+<div class="modal-bg" id="drugModal">
+  <div class="modal">
+    <h3 id="drugModalTitle">เพิ่มยา</h3>
+    <input type="hidden" id="drugEditIdx">
+    <div class="grid grid-2" style="gap:12px">
+      <div style="grid-column:span 2"><label>ชื่อยา <span class="req">*</span></label><input type="text" id="dmName"></div>
+      <div><label>ความเข้มข้น (mg/mL) <span class="req">*</span></label><input type="number" id="dmConc" step="0.01" min="0"></div>
+      <div><label>ขนาดบรรจุ (mL) <span class="req">*</span></label><input type="number" id="dmSize" step="1" min="1"></div>
+      <div><label>คงตัวหลังผสม (วัน) <span class="req">*</span></label><input type="number" id="dmStability" step="1" min="1"></div>
+      <div><label>หน่วยปกติ</label>
+        <select id="dmDefUnit">
+          <option value="mg">mg/dose</option>
+          <option value="ml">mL/dose</option>
+          <option value="mgkg">mg/kg/dose</option>
+        </select>
+      </div>
+      <div style="grid-column:span 2"><label>หมายเหตุ</label><input type="text" id="dmNote" placeholder="เก็บในตู้เย็น 2-8°C / เขย่าก่อนใช้ ฯลฯ"></div>
+    </div>
+    <div class="row row-end" style="margin-top:18px;gap:8px">
+      <button class="btn btn-ghost btn-sm" onclick="closeDrugModal()">ยกเลิก</button>
+      <button class="btn btn-primary btn-sm" onclick="saveDrug()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="holidayModal">
+  <div class="modal">
+    <h3>เพิ่มวันหยุด</h3>
+    <div class="grid" style="gap:12px">
+      <div><label>วันที่ <span class="req">*</span></label><input type="date" id="hmDate"></div>
+      <div><label>ชื่อวันหยุด <span class="req">*</span></label><input type="text" id="hmName" placeholder="วันหยุดชดเชย..."></div>
+    </div>
+    <div class="row row-end" style="margin-top:18px;gap:8px">
+      <button class="btn btn-ghost btn-sm" onclick="closeHolidayModal()">ยกเลิก</button>
+      <button class="btn btn-primary btn-sm" onclick="saveHoliday()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="overrideModal">
+  <div class="modal">
+    <h3>ปรับแก้แผนการจ่าย (Manual Override)</h3>
+    <div class="subtitle" style="margin-bottom:14px">การปรับเปลี่ยนต้องระบุเหตุผล · จะถูกบันทึกในระบบ</div>
+    <div class="grid" style="gap:12px">
+      <div><label>จำนวนขวดวันนี้ใหม่</label><input type="number" id="ovBottles" step="1" min="1"></div>
+      <div><label>เหตุผล <span class="req">*</span></label><textarea id="ovReason" rows="3" placeholder="เช่น ผู้ป่วยร้องขอ / ยาในสต็อกจำกัด"></textarea></div>
+      <div><label>ผู้สั่งการ</label><input type="text" id="ovBy" placeholder="ภญ./ภก. ..."></div>
+    </div>
+    <div class="row row-end" style="margin-top:18px;gap:8px">
+      <button class="btn btn-ghost btn-sm" onclick="closeOverrideModal()">ยกเลิก</button>
+      <button class="btn btn-rose btn-sm" onclick="applyOverride()">ยืนยันการปรับ</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SLIP MODAL: ใบนัดรับยา A4 ============ -->
+<div class="slip-modal" id="slipModal">
+  <div class="slip-modal-inner">
+
+    <div class="slip-toolbar no-print">
+      <h3>ใบนัดรับยา / ใบค้างจ่ายยา</h3>
+      <button class="btn btn-ghost btn-sm" onclick="closeSlipModal()">ปิด</button>
+      <button class="btn btn-secondary btn-sm" onclick="refreshSlip()">รีเฟรช</button>
+      <button class="btn btn-secondary btn-sm" onclick="printSlipNewWindow()" title="แนะนำ: เสถียรกว่า เปิดใบนัดในหน้าต่างใหม่">🪟 พิมพ์แยกหน้าต่าง</button>
+      <button class="btn btn-primary btn-sm" onclick="printSlip()">🖨 พิมพ์ใบนัด (A4)</button>
+    </div>
+
+    <div class="slip-extra-fields no-print">
+      <div>
+        <label>เบอร์โทรผู้ป่วย</label>
+        <input type="text" id="slipPhone" placeholder="0xx-xxx-xxxx" oninput="refreshSlip()">
+      </div>
+      <div>
+        <label>เภสัชกรผู้ออกใบนัด</label>
+        <input type="text" id="slipPharmacistOut" placeholder="ภญ./ภก. ..." oninput="refreshSlip()">
+      </div>
+      <div>
+        <label>เลขที่ใบนัด <small style="color:var(--ink-faint);font-weight:400">(แก้ได้)</small></label>
+        <input type="text" id="slipDocNo" oninput="refreshSlip()">
+      </div>
+    </div>
+
+    <!-- A4 PAPER -->
+    <div class="slip-paper" id="slipPaper">
+      <div class="slip-watermark">IPD Pharmacy</div>
+      <div class="slip-corner"></div>
+      <div class="slip-corner right"></div>
+
+      <div class="slip-paper-flex">
+        <div class="slip-content">
+
+          <div class="slip-header">
+            <div class="doc-no">เลขที่ <span id="sDocNo">—</span> · ออกใบเมื่อ <span id="sIssueDate">—</span></div>
+            <h1>ใบค้างจ่ายยา</h1>
+            <div class="hospital">ห้องจ่ายยาผู้ป่วยใน โรงพยาบาลพระนครศรีอยุธยา</div>
+            <div class="contact">โทร 035-211888 ต่อ 2223, 2228</div>
+            <div class="pickup-time">ติดต่อรับยาได้ตั้งแต่เวลา 10.00 น. – 16.30 น.</div>
+          </div>
+
+          <hr class="slip-divider">
+
+          <div class="slip-patient">
+            <div class="slip-patient-grid">
+              <div class="field field-full">
+                <span class="lbl">ชื่อ-สกุล:</span>
+                <span class="val" id="sPatientName">—</span>
+              </div>
+              <div class="field">
+                <span class="lbl">HN:</span>
+                <span class="val" id="sHN">—</span>
+              </div>
+              <div class="field">
+                <span class="lbl">โทร:</span>
+                <span class="val" id="sPhone">—</span>
+              </div>
+              <div class="field">
+                <span class="lbl">นัดพบแพทย์:</span>
+                <span class="val" id="sApptDoc">—</span>
+              </div>
+              <div class="field">
+                <span class="lbl">นัดรับยาครั้งถัดไป:</span>
+                <span class="val" id="sApptPickup">—</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="slip-section-title">รายการยาที่ค้างจ่าย / นัดรับ</div>
+          <table class="slip-table">
+            <thead>
+              <tr>
+                <th class="col-no">ลำดับ</th>
+                <th class="col-drug">ชื่อยา</th>
+                <th class="col-qty">จำนวน · ขนาดต่อครั้ง</th>
+                <th class="col-note">หมายเหตุ</th>
+                <th class="col-sig">ลายเซ็นเภสัชกร<br><small style="font-weight:400;font-size:9pt;color:#666">(เซ็นวันจ่ายยา)</small></th>
+              </tr>
+            </thead>
+            <tbody id="sItems"></tbody>
+          </table>
+
+          <div class="slip-summary-line" id="sSummary" style="display:none"></div>
+
+          <div class="slip-instructions">
+            <b>คำแนะนำสำหรับผู้ป่วย</b>
+            <ul>
+              <li>กรุณานำใบนัดนี้มาทุกครั้งที่มารับยา</li>
+              <li>นำขวดยาเปล่ามาคืนเพื่อตรวจสอบการใช้ยา</li>
+              <li>หากมารับยาไม่ได้ตามนัด กรุณาโทรแจ้งล่วงหน้า</li>
+              <li>เก็บยาตามคำแนะนำ · เขย่าขวดก่อนใช้ · ห้ามใช้ยาเลยวันหมดอายุ</li>
+            </ul>
+          </div>
+
+        </div>
+
+        <div class="slip-signatures">
+          <div class="slip-sig-block">
+            <div class="slip-sig-line"></div>
+            <div class="slip-sig-name" id="sPharmOut">—</div>
+            <div class="slip-sig-label">เภสัชกรผู้ออกใบนัด</div>
+            <div class="slip-sig-date" id="sIssueDate2">—</div>
+          </div>
+          <div class="slip-sig-block">
+            <div class="slip-sig-line"></div>
+            <div class="slip-sig-name">&nbsp;</div>
+            <div class="slip-sig-label">เภสัชกรผู้จ่ายยา</div>
+            <div class="slip-sig-date">วันที่จ่ายจริง: ____ / ____ / ______</div>
+          </div>
+        </div>
+
+        <div class="slip-footer-meta">
+          <span>IPD Pharmacy · Phra Nakhon Si Ayutthaya Hospital</span>
+          <span id="sFooterRef">—</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div>
+
+<script>
+// ============================================================
+// CONFIG (ค่าตั้งต้น โหลดจาก localStorage ได้)
+// ============================================================
+const DEFAULT_CONFIG = {
+  buffer: 15,           // % เผื่อปริมาตร
+  refillBuffer: 2,      // วันก่อนหมดยา ต้องนัดมารับ
+  maxMlDose: 20,        // เตือนถ้า mL/dose เกินนี้
+  minRefillDays: 5      // เตือนถ้านัดถัดไปใกล้กว่านี้
+};
+let CONFIG = {...DEFAULT_CONFIG};
+
+// บัญชียาเริ่มต้น (จากไฟล์ Excel ของพี่ฝัน)
+const DEFAULT_DRUGS = [
+  {name:"Lasix (2mg/mL)", conc:2, size:60, stability:30, defUnit:"mg", note:""},
+  {name:"Lasix (10mg/mL)", conc:10, size:60, stability:30, defUnit:"mg", note:""},
+  {name:"Aldactone", conc:1, size:50, stability:30, defUnit:"mg", note:""},
+  {name:"HCTZ", conc:1, size:50, stability:14, defUnit:"mg", note:""},
+  {name:"Losec", conc:2, size:60, stability:30, defUnit:"mg", note:""},
+  {name:"Dilantin", conc:4, size:50, stability:14, defUnit:"mg", note:""},
+  {name:"Phenobarb", conc:4, size:60, stability:21, defUnit:"mg", note:"ไม่มีค่า stability ในต้นฉบับ — กำหนดตามที่พี่ฝันแจ้ง 21 วัน"},
+  {name:"Diamox", conc:10, size:25, stability:7, defUnit:"mg", note:""},
+  {name:"Diazepam", conc:1, size:60, stability:30, defUnit:"mg", note:""},
+  {name:"Ursofalk", conc:20, size:50, stability:30, defUnit:"mg", note:""},
+  {name:"Keppra", conc:100, size:50, stability:7, defUnit:"mg", note:""},
+  {name:"Zinc", conc:2.5, size:30, stability:30, defUnit:"mg", note:""},
+  {name:"Propanolol", conc:2, size:60, stability:30, defUnit:"mg", note:""},
+  {name:"Acyclovir", conc:20, size:60, stability:14, defUnit:"mg", note:""},
+  {name:"Captopril", conc:1, size:25, stability:14, defUnit:"mg", note:""},
+  {name:"Amlodipine", conc:1, size:60, stability:30, defUnit:"mg", note:""},
+  {name:"20% NaCl sol.", conc:1, size:60, stability:30, defUnit:"ml", note:""},
+  {name:"Sildenafil", conc:2, size:50, stability:30, defUnit:"mg", note:""}
+];
+
+// วันหยุดราชการไทย พ.ศ.2569 (ค.ศ.2026)
+const DEFAULT_HOLIDAYS_2026 = [
+  {date:"2026-01-01", name:"วันขึ้นปีใหม่"},
+  {date:"2026-01-02", name:"วันหยุดพิเศษ"},
+  {date:"2026-03-03", name:"วันมาฆบูชา"},
+  {date:"2026-04-06", name:"วันจักรี"},
+  {date:"2026-04-13", name:"วันสงกรานต์"},
+  {date:"2026-04-14", name:"วันสงกรานต์"},
+  {date:"2026-04-15", name:"วันสงกรานต์"},
+  {date:"2026-05-01", name:"วันแรงงาน"},
+  {date:"2026-05-04", name:"วันฉัตรมงคล"},
+  {date:"2026-05-11", name:"วันพืชมงคล"},
+  {date:"2026-06-01", name:"วันวิสาขบูชา"},
+  {date:"2026-06-03", name:"วันเฉลิมฯ พระราชินี"},
+  {date:"2026-07-28", name:"วันเฉลิมฯ ร.10"},
+  {date:"2026-07-29", name:"วันอาสาฬหบูชา"},
+  {date:"2026-07-30", name:"วันเข้าพรรษา"},
+  {date:"2026-08-12", name:"วันแม่แห่งชาติ"},
+  {date:"2026-10-13", name:"วันคล้ายวันสวรรคต ร.9"},
+  {date:"2026-10-23", name:"วันปิยมหาราช"},
+  {date:"2026-12-05", name:"วันพ่อแห่งชาติ"},
+  {date:"2026-12-10", name:"วันรัฐธรรมนูญ"},
+  {date:"2026-12-31", name:"วันสิ้นปี"}
+];
+
+// ============================================================
+// STATE & STORAGE
+// ============================================================
+let DRUGS = [];
+let HOLIDAYS = [];
+let AUDIT = [];
+let LAST_RESULT = null;
+
+function loadState(){
+  try {
+    DRUGS = JSON.parse(localStorage.getItem('pcs_drugs')) || [...DEFAULT_DRUGS];
+    HOLIDAYS = JSON.parse(localStorage.getItem('pcs_holidays')) || [...DEFAULT_HOLIDAYS_2026];
+    AUDIT = JSON.parse(localStorage.getItem('pcs_audit')) || [];
+    CONFIG = {...DEFAULT_CONFIG, ...(JSON.parse(localStorage.getItem('pcs_config')) || {})};
+  } catch(e){
+    DRUGS = [...DEFAULT_DRUGS]; HOLIDAYS=[...DEFAULT_HOLIDAYS_2026]; AUDIT=[]; CONFIG={...DEFAULT_CONFIG};
+  }
+}
+function saveDrugs(){ localStorage.setItem('pcs_drugs', JSON.stringify(DRUGS)); }
+function saveHolidays(){ localStorage.setItem('pcs_holidays', JSON.stringify(HOLIDAYS)); }
+function saveAuditDb(){ localStorage.setItem('pcs_audit', JSON.stringify(AUDIT.slice(0,200))); }
+function saveConfigDb(){ localStorage.setItem('pcs_config', JSON.stringify(CONFIG)); }
+
+function audit(action, detail){
+  AUDIT.unshift({ts: new Date().toISOString(), action, detail});
+  AUDIT = AUDIT.slice(0,200);
+  saveAuditDb();
+  if(document.getElementById('tab-audit').style.display !== 'none') renderAudit();
+}
+
+// ============================================================
+// DATE UTILITIES
+// ============================================================
+const fmtDate = d => {
+  const dt = (d instanceof Date) ? d : new Date(d);
+  const day = String(dt.getDate()).padStart(2,'0');
+  const m = String(dt.getMonth()+1).padStart(2,'0');
+  return `${day}/${m}/${dt.getFullYear()+543}`;
+};
+const fmtDateShort = d => {
+  const dt = (d instanceof Date) ? d : new Date(d);
+  const wd = ['อา','จ','อ','พ','พฤ','ศ','ส'][dt.getDay()];
+  return `${wd}. ${fmtDate(dt)}`;
+};
+const ymd = d => {
+  const dt = (d instanceof Date) ? d : new Date(d);
+  return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+};
+const parseYmd = s => {
+  const [y,m,d] = s.split('-').map(Number);
+  return new Date(y, m-1, d);
+};
+const addDays = (d, n) => {
+  const dt = (d instanceof Date) ? new Date(d) : parseYmd(d);
+  dt.setDate(dt.getDate() + n);
+  return dt;
+};
+const daysBetween = (a, b) => {
+  const A = (a instanceof Date) ? a : parseYmd(a);
+  const B = (b instanceof Date) ? b : parseYmd(b);
+  return Math.round((B - A) / 86400000);
+};
+const isWeekend = d => { const dy = d.getDay(); return dy === 0 || dy === 6; };
+const isHoliday = d => HOLIDAYS.some(h => h.date === ymd(d));
+const isBusinessDay = d => !isWeekend(d) && !isHoliday(d);
+const holidayName = d => { const h = HOLIDAYS.find(h => h.date === ymd(d)); return h ? h.name : null; };
+
+// เลื่อนวันให้เป็นวันทำการ — ถ้าเลื่อนถอยหลัง (backward) ใช้สำหรับนัดที่ห้ามเลยวันยาหมดอายุ
+function shiftToBusinessDay(d, direction='backward'){
+  let cur = new Date(d);
+  let safety = 0;
+  while(!isBusinessDay(cur) && safety < 30){
+    cur = addDays(cur, direction === 'backward' ? -1 : 1);
+    safety++;
+  }
+  return cur;
+}
+
+// ============================================================
+// CALCULATION ENGINE — หัวใจของระบบ
+// ============================================================
+function calcMlPerDose(orderUnit, amount, drug, weight){
+  // คืน {ml, mgPerDose, explain}
+  const conc = drug.conc; // mg/mL
+  if(orderUnit === 'ml'){
+    return { ml: amount, mgPerDose: amount * conc,
+      explain: `รับสั่งเป็น mL ตรง ๆ — ${amount} mL/dose`};
+  }
+  if(orderUnit === 'mg'){
+    if(conc <= 0) return null;
+    const ml = amount / conc;
+    return { ml, mgPerDose: amount,
+      explain: `${amount} mg ÷ ${conc} mg/mL = <code>${ml.toFixed(2)} mL/dose</code>`};
+  }
+  if(orderUnit === 'mgkg'){
+    if(!weight || weight <= 0) return {error: "กรุณาใส่น้ำหนักผู้ป่วย เพราะสั่งเป็น mg/kg"};
+    if(conc <= 0) return null;
+    const mgPerDose = amount * weight;
+    const ml = mgPerDose / conc;
+    return { ml, mgPerDose,
+      explain: `${amount} mg/kg × ${weight} kg = ${mgPerDose.toFixed(2)} mg/dose<br>÷ ${conc} mg/mL = <code>${ml.toFixed(2)} mL/dose</code>`};
+  }
+}
+
+// แผนการจ่ายยาแบบหลายครั้ง (split dispensing)
+function buildDispenseSchedule(dispenseDate, appointmentDate, drug, mlPerDay){
+  const totalDays = daysBetween(dispenseDate, appointmentDate);
+  if(totalDays <= 0) return {error: "วันนัดต้องอยู่หลังวันจ่ายยา"};
+
+  const stability = drug.stability;
+  const buffer = CONFIG.buffer / 100;
+  const refillBuffer = CONFIG.refillBuffer;
+
+  // ปริมาตรที่ต้องใช้รวมตลอด course (รวม buffer)
+  const totalMlNeeded = mlPerDay * totalDays * (1 + buffer);
+  const totalBottles = Math.ceil(totalMlNeeded / drug.size);
+
+  // คำนวณว่าแต่ละ visit จ่ายกี่ขวด แต่ละขวดอยู่ได้ stability วัน
+  // จำนวนวันที่ขวดเดียวอยู่ได้ก่อนหมด/หมดอายุ
+  const daysPerBottle = Math.min(
+    drug.size / mlPerDay,           // วันที่ใช้ได้ตามปริมาตร (ไม่หัก buffer แล้ว)
+    stability                        // วันคงตัว
+  );
+  // วันที่ขวดเดียวให้คุ้มครองได้จริง (ใช้ buffer เพื่อกันปริมาตรไม่พอ)
+  const safeDaysPerBottle = Math.min(
+    (drug.size / (1 + buffer)) / mlPerDay,
+    stability
+  );
+
+  // จำนวนขวดที่ใช้ใน 1 visit ต้องไม่ทำให้ขวดสุดท้ายของ visit นั้นใช้เกิน stability
+  // เพราะเมื่อผสม ขวดทั้งหมดที่ส่งกลับบ้านพร้อมกันมีอายุเท่ากัน
+  // กลยุทธ์: 1 visit จ่ายหลายขวดได้ แต่ผู้ป่วยต้องใช้ขวดสุดท้ายภายใน stability วัน นับจากวันรับ
+  // ดังนั้น 1 visit ครอบคลุมได้สูงสุด = stability วัน
+  // จำนวนขวดต่อ visit = ceil(stability * mlPerDay * (1+buffer) / size)  แต่ไม่เกินจำนวนรวม
+
+  let schedule = [];
+  let curDate = parseYmd(ymd(dispenseDate));
+  let daysCovered = 0;
+  let bottlesUsed = 0;
+  let visitNum = 1;
+  let safety = 0;
+
+  while(daysCovered < totalDays && safety < 50){
+    safety++;
+    const remainingDays = totalDays - daysCovered;
+    // ครอบคลุมได้สูงสุด = stability วัน (เพราะขวดที่จ่ายในวันนี้ทั้งหมดมีอายุเท่ากัน)
+    const coverageThisVisit = Math.min(stability, remainingDays);
+    const mlThisVisit = coverageThisVisit * mlPerDay * (1 + buffer);
+    const bottlesThisVisit = Math.ceil(mlThisVisit / drug.size);
+
+    schedule.push({
+      visit: visitNum,
+      date: new Date(curDate),
+      bottles: bottlesThisVisit,
+      coversDays: coverageThisVisit,
+      mlNeeded: coverageThisVisit * mlPerDay,
+      mlDispensed: bottlesThisVisit * drug.size,
+      expiryDate: addDays(curDate, stability)
+    });
+
+    bottlesUsed += bottlesThisVisit;
+    daysCovered += coverageThisVisit;
+
+    if(daysCovered >= totalDays) break;
+
+    // วันนัดถัดไป = วันรับยาวันนี้ + (stability - refillBuffer)
+    // refillBuffer ทำให้ผู้ป่วยมียาเหลือ 2 วัน ตอนมารับใหม่
+    let nextRaw = addDays(curDate, stability - refillBuffer);
+    // ห้ามนัดเกินวันยาหมดอายุ ดังนั้นต้องเลื่อนถอยหลังถ้าตรงวันหยุด
+    let nextBiz = shiftToBusinessDay(nextRaw, 'backward');
+    // ถ้าเลื่อนไปแล้วใกล้ปัจจุบันมาก ลองเลื่อนหน้าแทน
+    if(daysBetween(curDate, nextBiz) < CONFIG.minRefillDays){
+      const forward = shiftToBusinessDay(nextRaw, 'forward');
+      if(daysBetween(curDate, forward) <= stability){
+        nextBiz = forward;
+      }
+    }
+
+    curDate = nextBiz;
+    visitNum++;
+  }
+
+  // visit สุดท้าย: ปรับให้ครอบคลุมแค่ที่เหลือพอดี (ไม่ต้อง stability วันเต็ม)
+  if(schedule.length > 0){
+    const last = schedule[schedule.length-1];
+    const usedBeforeLast = schedule.slice(0,-1).reduce((s,v) => s + v.coversDays, 0);
+    const lastRemaining = totalDays - usedBeforeLast;
+    if(lastRemaining > 0 && lastRemaining < last.coversDays){
+      last.coversDays = lastRemaining;
+      last.mlNeeded = lastRemaining * mlPerDay;
+      const newMl = lastRemaining * mlPerDay * (1 + buffer);
+      last.bottles = Math.ceil(newMl / drug.size);
+      last.mlDispensed = last.bottles * drug.size;
+      bottlesUsed = schedule.reduce((s,v) => s + v.bottles, 0);
+    }
+  }
+
+  return {
+    schedule,
+    totalDays,
+    totalMlNeeded: mlPerDay * totalDays,           // ไม่รวม buffer (ปริมาตร "จริง" ที่ต้องกิน)
+    totalMlWithBuffer: mlPerDay * totalDays * (1 + buffer),
+    totalBottles: bottlesUsed,
+    appointmentReached: daysCovered >= totalDays
+  };
+}
+
+// ============================================================
+// SAFETY VALIDATION
+// ============================================================
+function validateSafety(input, calc){
+  const alerts = [];
+  const {drug, mlPerDose, mgPerDose, mlPerDay, freq, weight, orderUnit, totalDays} = input;
+  const {schedule} = calc;
+
+  if(mlPerDose > CONFIG.maxMlDose){
+    alerts.push({type:'danger', title:'ปริมาตรต่อครั้งสูงผิดปกติ',
+      msg:`${mlPerDose.toFixed(2)} mL/dose เกินค่าเตือน ${CONFIG.maxMlDose} mL — ตรวจสอบขนาดยาและความเข้มข้นอีกครั้ง`});
+  }
+  if(mlPerDose < 0.1 && mlPerDose > 0){
+    alerts.push({type:'warn', title:'ปริมาตรต่อครั้งน้อยมาก',
+      msg:`${mlPerDose.toFixed(3)} mL/dose — ระวังการตวงให้แม่นยำ พิจารณาใช้กระบอกฉีดยาเด็ก (oral syringe ขนาด 1 mL)`});
+  }
+  if(mlPerDay > drug.size){
+    alerts.push({type:'warn', title:'ใช้ยามากกว่า 1 ขวด/วัน',
+      msg:`ต้องใช้ ${mlPerDay.toFixed(1)} mL/วัน แต่ขวดมีเพียง ${drug.size} mL — ตรวจสอบขนาดยา`});
+  }
+
+  // ตรวจ refill gap
+  for(let i=1; i<schedule.length; i++){
+    const gap = daysBetween(schedule[i-1].date, schedule[i].date);
+    if(gap < CONFIG.minRefillDays){
+      alerts.push({type:'warn', title:`ระยะนัดสั้นเกินไป (visit ${schedule[i-1].visit}→${schedule[i].visit})`,
+        msg:`ห่างกัน ${gap} วัน — สั้นกว่าค่าตั้ง ${CONFIG.minRefillDays} วัน อาจรบกวนผู้ป่วย พิจารณาปรับ`});
+    }
+    if(gap > drug.stability){
+      alerts.push({type:'danger', title:`ระยะนัดเกินวันหมดอายุยา`,
+        msg:`ห่าง ${gap} วัน แต่ยาคงตัวเพียง ${drug.stability} วัน — ผู้ป่วยจะใช้ยาหลังหมดอายุ`});
+    }
+  }
+
+  // ตรวจ visit สุดท้ายเลยวันนัดหรือไม่
+  if(schedule.length > 0){
+    const lastVisit = schedule[schedule.length-1];
+    const lastEndDate = addDays(lastVisit.date, lastVisit.coversDays);
+    const apptDate = parseYmd(ymd(input.appointmentDate));
+    if(lastEndDate < apptDate){
+      const shortfall = daysBetween(lastEndDate, apptDate);
+      alerts.push({type:'danger', title:'ยาไม่พอจนถึงวันนัด',
+        msg:`ขาดอีก ${shortfall} วัน ก่อนถึงวันนัดแพทย์`});
+    }
+  }
+
+  // เตือนถ้า BID ของยาที่ปกติ TID/QID
+  if((drug.name.includes('Captopril') || drug.name.includes('Acyclovir')) && freq < 3){
+    alerts.push({type:'info', title:'ตรวจสอบความถี่',
+      msg:`ยา ${drug.name} ส่วนใหญ่ให้ ≥ 3 ครั้ง/วัน — กรณีที่หมอสั่งน้อยกว่า ให้ยืนยันกับหมอผู้สั่ง`});
+  }
+  if(drug.name.includes('Diamox') && freq > 4){
+    alerts.push({type:'info', title:'ตรวจสอบความถี่ Diamox',
+      msg:'ปกติให้ ≤ 4 ครั้ง/วัน'});
+  }
+
+  // ตรวจน้ำหนักหายไปสำหรับยาที่ใช้ตามน้ำหนัก
+  if(orderUnit === 'mgkg' && (!weight || weight <= 0)){
+    alerts.push({type:'danger', title:'ขาดน้ำหนักผู้ป่วย', msg:'สั่งเป็น mg/kg ต้องมีน้ำหนัก'});
+  }
+
+  // ปริมาตรรวมต่ำมาก (อาจคีย์ผิด)
+  if(calc.totalBottles >= 8){
+    alerts.push({type:'warn', title:'จำนวนขวดรวมเยอะ',
+      msg:`รวม ${calc.totalBottles} ขวด แบ่ง ${schedule.length} ครั้ง — ตรวจสอบความเข้มข้นและขนาดบรรจุอีกครั้ง`});
+  }
+
+  if(alerts.length === 0){
+    alerts.push({type:'good', title:'ผ่านการตรวจสอบเบื้องต้น', msg:'ไม่พบความผิดปกติจากการคำนวณ — เภสัชกรควรตรวจซ้ำก่อนจ่าย'});
+  }
+
+  return alerts;
+}
+
+// ============================================================
+// UI: TAB SWITCHING
+// ============================================================
+document.querySelectorAll('nav.tabs button').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('nav.tabs button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+    document.getElementById('tab-' + b.dataset.tab).style.display = 'block';
+    if(b.dataset.tab === 'drugs') renderDrugs();
+    if(b.dataset.tab === 'holidays') renderHolidays();
+    if(b.dataset.tab === 'audit') renderAudit();
+    if(b.dataset.tab === 'config') renderConfig();
+  });
+});
+
+// ============================================================
+// CALCULATION FORM
+// ============================================================
+function populateDrugs(){
+  const sel = document.getElementById('drugSelect');
+  sel.innerHTML = '<option value="">— เลือกยา —</option>';
+  DRUGS.forEach((d, i) => {
+    sel.innerHTML += `<option value="${i}">${d.name} · ${d.conc} mg/mL · ${d.size} mL · คงตัว ${d.stability} วัน</option>`;
+  });
+}
+
+document.getElementById('drugSelect').addEventListener('change', e => {
+  const i = e.target.value;
+  if(i !== '' && DRUGS[i]){
+    document.getElementById('doseUnit').value = DRUGS[i].defUnit || 'mg';
+    updateDoseUnit();
+  }
+});
+
+function updateDoseUnit(){
+  const u = document.getElementById('doseUnit').value;
+  const lbl = document.getElementById('doseAmtUnit');
+  if(u === 'mg') lbl.textContent = 'mg';
+  else if(u === 'ml') lbl.textContent = 'mL';
+  else lbl.textContent = 'mg/kg';
+}
+document.getElementById('doseUnit').addEventListener('change', updateDoseUnit);
+
+document.getElementById('freq').addEventListener('change', e => {
+  const ce = document.getElementById('freqCustom');
+  if(e.target.value === 'custom'){ ce.disabled = false; ce.focus(); }
+  else { ce.disabled = true; ce.value = e.target.value; }
+});
+
+function resetForm(){
+  ['patientName','patientHN','patientWeight','doseAmount'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('drugSelect').value = '';
+  document.getElementById('freq').value = '2';
+  document.getElementById('freqCustom').value = '2';
+  document.getElementById('freqCustom').disabled = true;
+  document.getElementById('resultArea').innerHTML = '';
+  setToday();
+}
+
+function setToday(){
+  const today = ymd(new Date());
+  document.getElementById('dispenseDate').value = today;
+}
+
+// ============================================================
+// MAIN CALCULATE
+// ============================================================
+function calculate(){
+  const status = document.getElementById('calcStatus');
+  status.textContent = '';
+
+  const drugIdx = document.getElementById('drugSelect').value;
+  const dispenseDate = document.getElementById('dispenseDate').value;
+  const apptDate = document.getElementById('appointmentDate').value;
+  const orderUnit = document.getElementById('doseUnit').value;
+  const doseAmount = parseFloat(document.getElementById('doseAmount').value);
+  const freqVal = document.getElementById('freq').value;
+  const freq = freqVal === 'custom' ? parseInt(document.getElementById('freqCustom').value) : parseInt(freqVal);
+  const weight = parseFloat(document.getElementById('patientWeight').value) || 0;
+  const patientName = document.getElementById('patientName').value;
+  const patientHN = document.getElementById('patientHN').value;
+
+  // VALIDATE
+  const errors = [];
+  if(drugIdx === '') errors.push('เลือกยา');
+  if(!dispenseDate) errors.push('วันที่จ่ายยา');
+  if(!apptDate) errors.push('วันนัดแพทย์');
+  if(!doseAmount || doseAmount <= 0) errors.push('ขนาดยาต่อครั้ง');
+  if(!freq || freq <= 0) errors.push('ความถี่');
+
+  if(errors.length){
+    status.style.color = 'var(--danger)';
+    status.textContent = '⚠ ขาด: ' + errors.join(', ');
+    return;
+  }
+
+  const drug = DRUGS[drugIdx];
+  const doseCalc = calcMlPerDose(orderUnit, doseAmount, drug, weight);
+  if(!doseCalc || doseCalc.error){
+    status.style.color = 'var(--danger)';
+    status.textContent = doseCalc?.error || 'คำนวณ mL/dose ไม่ได้';
+    return;
+  }
+
+  const mlPerDose = doseCalc.ml;
+  const mgPerDose = doseCalc.mgPerDose;
+  const mlPerDay = mlPerDose * freq;
+  const totalDays = daysBetween(dispenseDate, apptDate);
+
+  if(totalDays <= 0){
+    status.style.color = 'var(--danger)';
+    status.textContent = '⚠ วันนัดต้องอยู่หลังวันจ่ายยา';
+    return;
+  }
+
+  const schedule = buildDispenseSchedule(dispenseDate, apptDate, drug, mlPerDay);
+
+  const input = {drug, mlPerDose, mgPerDose, mlPerDay, freq, weight, orderUnit, dispenseDate, appointmentDate: apptDate, totalDays, doseAmount, patientName, patientHN};
+  const alerts = validateSafety(input, schedule);
+
+  LAST_RESULT = {input, schedule, alerts, doseCalc};
+  renderResult(LAST_RESULT);
+  const ptDesc = patientName.trim() || patientHN.trim() ? `${patientName.trim() || '(ไม่ระบุชื่อ)'} (HN ${patientHN.trim() || '—'})` : '(ไม่ระบุผู้ป่วย)';
+  audit('คำนวณ', `${ptDesc} · ${drug.name} · ${doseAmount}${orderUnit==='mg'?'mg':orderUnit==='ml'?'mL':'mg/kg'} × ${freq}/วัน × ${totalDays}d → ${schedule.totalBottles} ขวด ${schedule.schedule.length} visit`);
+}
+
+// ============================================================
+// RENDER RESULT
+// ============================================================
+function renderResult(res){
+  const {input, schedule, doseCalc} = res;
+  const drug = input.drug;
+  const apptStr = fmtDateShort(parseYmd(input.appointmentDate));
+  const dispStr = fmtDateShort(parseYmd(input.dispenseDate));
+  const todaysVisit = schedule.schedule[0];
+
+  let html = '';
+
+  // CALC SUMMARY
+  html += `<div class="card calc-out no-print" id="calcResultCard">
+    <h3>ผลการคำนวณ</h3>
+    <div class="calc-summary">
+      <span class="tag rose">${drug.name}</span>
+      <span class="tag">ความเข้มข้น ${drug.conc} mg/mL</span>
+      <span class="tag">ขนาด ${drug.size} mL/ขวด</span>
+      <span class="tag honey">คงตัว ${drug.stability} วัน</span>
+    </div>
+
+    <div class="calc-row"><div class="k">ขนาดต่อครั้ง</div><div class="v">${input.mlPerDose.toFixed(2)}<small>mL</small> <small>(${input.mgPerDose.toFixed(2)} mg)</small></div></div>
+    <div class="calc-row"><div class="k">ความถี่</div><div class="v">${input.freq}<small>×/วัน</small></div></div>
+    <div class="calc-row"><div class="k">ปริมาตรต่อวัน</div><div class="v">${input.mlPerDay.toFixed(2)}<small>mL/วัน</small></div></div>
+    <div class="calc-row"><div class="k">ระยะเวลาทั้งหมด (จนถึงวันนัด)</div><div class="v">${input.totalDays}<small>วัน</small></div></div>
+    <div class="calc-row"><div class="k">ปริมาตรรวมที่ผู้ป่วยต้องใช้จริง</div><div class="v">${schedule.totalMlNeeded.toFixed(1)}<small>mL</small></div></div>
+    <div class="calc-row"><div class="k">+ Buffer ${CONFIG.buffer}% (เผื่อสูญเสีย)</div><div class="v">${schedule.totalMlWithBuffer.toFixed(1)}<small>mL</small></div></div>
+    <div class="calc-row highlight"><div class="k"><b>รวมต้องจ่าย</b> · ${schedule.schedule.length} ครั้ง</div><div class="v">${schedule.totalBottles}<small>ขวด</small></div></div>
+  </div>`;
+
+  // EXPLAIN
+  html += `<div class="calc-explain">
+    <b>การคำนวณ mL/dose:</b><br>${doseCalc.explain}<br>
+    × ${input.freq} ครั้ง/วัน = <code>${input.mlPerDay.toFixed(2)} mL/วัน</code>
+  </div>`;
+
+  // SAFETY ALERTS
+  html += '<div class="card no-print"><h2>การตรวจสอบความปลอดภัย</h2><div class="alerts">';
+  res.alerts.forEach(a => {
+    const icoMap = {danger:'!', warn:'!', info:'i', good:'✓'};
+    html += `<div class="alert ${a.type}">
+      <div class="ico">${icoMap[a.type]}</div>
+      <div><b>${a.title}</b><br>${a.msg}</div>
+    </div>`;
+  });
+  html += '</div></div>';
+
+  // SCHEDULE TABLE
+  html += `<div class="card" id="scheduleCard">
+    <div class="row row-between no-print">
+      <div>
+        <h2 style="margin:0">ตารางการจ่ายยาและนัดหมาย</h2>
+        <div class="subtitle" style="margin-top:4px">นัดทุกครั้งเป็นวันทำการไทย · เลื่อนถอยหลังจากวันยาหมดอายุเพื่อความปลอดภัย</div>
+      </div>
+      <div class="row" style="gap:6px">
+        <button class="btn btn-secondary btn-sm" onclick="openOverrideModal()">ปรับแก้</button>
+        <button class="btn btn-secondary btn-sm" onclick="openSlipModal()">📄 ใบนัดรับยา (A4)</button>
+        <button class="btn btn-primary btn-sm" onclick="window.print()">🖨 พิมพ์สรุป</button>
+      </div>
+    </div>
+    <table class="schedule-table">
+      <thead>
+        <tr>
+          <th style="width:60px">ครั้งที่</th>
+          <th>วันที่นัดมารับ</th>
+          <th>ครอบคลุม</th>
+          <th>จำนวนขวด</th>
+          <th>ปริมาตรที่ใช้จริง</th>
+          <th>ยาในขวดหมดอายุ</th>
+        </tr>
+      </thead><tbody>`;
+  schedule.schedule.forEach((v,i) => {
+    const isFinal = i === schedule.schedule.length - 1;
+    const endDate = addDays(v.date, v.coversDays);
+    html += `<tr class="${isFinal ? 'visit-final' : ''}">
+      <td><span class="visit-num">${v.visit}</span>${i===0?' <small>(วันนี้)</small>':''}</td>
+      <td><b>${fmtDateShort(v.date)}</b><small>${i===0 ? 'วันที่จ่ายยาวันนี้' : ''}</small></td>
+      <td>${v.coversDays} วัน<small>ถึง ${fmtDateShort(endDate)}</small></td>
+      <td><b style="font-size:18px;color:var(--rose-deep)">${v.bottles}</b> ขวด<small>(${v.mlDispensed} mL)</small></td>
+      <td>${v.mlNeeded.toFixed(1)} mL</td>
+      <td>${fmtDateShort(v.expiryDate)}<small>คงตัว ${drug.stability} วัน</small></td>
+    </tr>`;
+  });
+  html += `</tbody></table>`;
+
+  // PRINT-ONLY: APPOINTMENT SLIPS
+  html += `<div class="print-only" style="margin-top:24px">
+    <hr style="margin:24px 0;border:none;border-top:2px dashed #999">
+    <h2 style="font-family:var(--serif);margin-bottom:8px">ใบนัดรับยา</h2>
+    <p><b>ผู้ป่วย:</b> ${input.patientName || '_______________________'} ${input.patientHN ? '· HN ' + input.patientHN : ''}</p>
+    <p><b>ยา:</b> ${drug.name} · ขนาด ${input.mlPerDose.toFixed(2)} mL × ${input.freq} ครั้ง/วัน</p>
+    <p><b>นัดพบแพทย์:</b> ${apptStr}</p>
+    <table class="schedule-table" style="margin-top:14px">
+      <thead><tr><th>ครั้งที่</th><th>วันที่</th><th>จำนวนขวด</th><th>ใช้ก่อนวันที่</th></tr></thead>
+      <tbody>`;
+  schedule.schedule.forEach(v => {
+    html += `<tr><td>${v.visit}</td><td>${fmtDateShort(v.date)}</td><td>${v.bottles} ขวด</td><td>${fmtDateShort(v.expiryDate)}</td></tr>`;
+  });
+  html += `</tbody></table>
+    <p style="margin-top:18px;font-size:11pt"><b>คำแนะนำ:</b> เก็บยาตามคำแนะนำ · เขย่าขวดก่อนใช้ · ห้ามใช้ยาเลยวันหมดอายุ · นำขวดเปล่ามาทุกครั้งที่มารับยา</p>
+    <p style="margin-top:24px;font-size:11pt">เภสัชกร: _______________________ วันที่: ${fmtDate(new Date())}</p>
+  </div>`;
+
+  html += `</div>`;
+
+  document.getElementById('resultArea').innerHTML = html;
+  document.getElementById('calcStatus').style.color = 'var(--good)';
+  document.getElementById('calcStatus').textContent = '✓ คำนวณสำเร็จ';
+  document.getElementById('resultArea').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// ============================================================
+// OVERRIDE MODAL
+// ============================================================
+function openOverrideModal(){
+  if(!LAST_RESULT) return;
+  document.getElementById('ovBottles').value = LAST_RESULT.schedule.schedule[0].bottles;
+  document.getElementById('ovReason').value = '';
+  document.getElementById('ovBy').value = '';
+  document.getElementById('overrideModal').classList.add('show');
+}
+function closeOverrideModal(){ document.getElementById('overrideModal').classList.remove('show'); }
+function applyOverride(){
+  const newBottles = parseInt(document.getElementById('ovBottles').value);
+  const reason = document.getElementById('ovReason').value.trim();
+  const by = document.getElementById('ovBy').value.trim();
+  if(!reason){ alert('ต้องระบุเหตุผล'); return; }
+  if(!newBottles || newBottles < 1){ alert('จำนวนขวดไม่ถูกต้อง'); return; }
+  const old = LAST_RESULT.schedule.schedule[0].bottles;
+  LAST_RESULT.schedule.schedule[0].bottles = newBottles;
+  LAST_RESULT.schedule.schedule[0].mlDispensed = newBottles * LAST_RESULT.input.drug.size;
+  audit('ปรับแก้แผน', `${LAST_RESULT.input.patientName || '(ไม่ระบุชื่อ)'}: ขวดวันนี้ ${old}→${newBottles} โดย ${by||'—'} เหตุผล: ${reason}`);
+  renderResult(LAST_RESULT);
+  closeOverrideModal();
+}
+
+// ============================================================
+// DRUGS TAB
+// ============================================================
+function renderDrugs(){
+  const list = document.getElementById('drugList');
+  if(DRUGS.length === 0){ list.innerHTML = '<div class="empty">ยังไม่มียาในระบบ</div>'; return; }
+  list.innerHTML = DRUGS.map((d,i) => `
+    <div class="drug-row">
+      <div class="name">${d.name}${d.note ? '<br><small style="color:var(--ink-faint);font-size:11px">'+d.note+'</small>' : ''}</div>
+      <div class="num">${d.conc} mg/mL</div>
+      <div class="num">${d.size} mL</div>
+      <div class="num">${d.stability} วัน</div>
+      <div class="actions">
+        <button class="icon-btn" onclick="editDrug(${i})" title="แก้ไข">✎</button>
+        <button class="icon-btn del" onclick="deleteDrug(${i})" title="ลบ">×</button>
+      </div>
+    </div>`).join('');
+}
+function openDrugModal(){
+  document.getElementById('drugModalTitle').textContent = 'เพิ่มยา';
+  document.getElementById('drugEditIdx').value = '';
+  ['dmName','dmConc','dmSize','dmStability','dmNote'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('dmDefUnit').value = 'mg';
+  document.getElementById('drugModal').classList.add('show');
+}
+function closeDrugModal(){ document.getElementById('drugModal').classList.remove('show'); }
+function editDrug(i){
+  const d = DRUGS[i];
+  document.getElementById('drugModalTitle').textContent = 'แก้ไขยา';
+  document.getElementById('drugEditIdx').value = i;
+  document.getElementById('dmName').value = d.name;
+  document.getElementById('dmConc').value = d.conc;
+  document.getElementById('dmSize').value = d.size;
+  document.getElementById('dmStability').value = d.stability;
+  document.getElementById('dmDefUnit').value = d.defUnit || 'mg';
+  document.getElementById('dmNote').value = d.note || '';
+  document.getElementById('drugModal').classList.add('show');
+}
+function saveDrug(){
+  const idx = document.getElementById('drugEditIdx').value;
+  const d = {
+    name: document.getElementById('dmName').value.trim(),
+    conc: parseFloat(document.getElementById('dmConc').value),
+    size: parseFloat(document.getElementById('dmSize').value),
+    stability: parseInt(document.getElementById('dmStability').value),
+    defUnit: document.getElementById('dmDefUnit').value,
+    note: document.getElementById('dmNote').value.trim()
+  };
+  if(!d.name || !d.conc || !d.size || !d.stability){ alert('กรอกข้อมูลให้ครบ'); return; }
+  if(idx === ''){ DRUGS.push(d); audit('เพิ่มยา', d.name); }
+  else { const old = DRUGS[idx].name; DRUGS[idx] = d; audit('แก้ไขยา', `${old} → ${d.name}`); }
+  saveDrugs(); populateDrugs(); renderDrugs(); closeDrugModal();
+}
+function deleteDrug(i){
+  if(!confirm(`ลบ "${DRUGS[i].name}" ?`)) return;
+  audit('ลบยา', DRUGS[i].name);
+  DRUGS.splice(i,1);
+  saveDrugs(); populateDrugs(); renderDrugs();
+}
+
+// ============================================================
+// HOLIDAYS TAB
+// ============================================================
+function renderHolidays(){
+  const sorted = [...HOLIDAYS].sort((a,b) => a.date.localeCompare(b.date));
+  document.getElementById('holidayList').innerHTML = sorted.map((h,realIdx) => {
+    const i = HOLIDAYS.findIndex(x => x.date === h.date && x.name === h.name);
+    return `<div class="holiday-chip">
+      <div><div class="date">${fmtDate(parseYmd(h.date))}</div><div class="name">${h.name}</div></div>
+      <button onclick="deleteHoliday(${i})">×</button>
+    </div>`;
+  }).join('') || '<div class="empty">ยังไม่มีวันหยุด</div>';
+}
+function openHolidayModal(){
+  document.getElementById('hmDate').value = '';
+  document.getElementById('hmName').value = '';
+  document.getElementById('holidayModal').classList.add('show');
+}
+function closeHolidayModal(){ document.getElementById('holidayModal').classList.remove('show'); }
+function saveHoliday(){
+  const date = document.getElementById('hmDate').value;
+  const name = document.getElementById('hmName').value.trim();
+  if(!date || !name){ alert('กรอกข้อมูลให้ครบ'); return; }
+  HOLIDAYS.push({date, name});
+  audit('เพิ่มวันหยุด', `${date} ${name}`);
+  saveHolidays(); renderHolidays(); closeHolidayModal();
+}
+function deleteHoliday(i){
+  if(!confirm(`ลบวันหยุด "${HOLIDAYS[i].name}" ?`)) return;
+  audit('ลบวันหยุด', HOLIDAYS[i].name);
+  HOLIDAYS.splice(i,1);
+  saveHolidays(); renderHolidays();
+}
+
+// ============================================================
+// CONFIG TAB
+// ============================================================
+function renderConfig(){
+  document.getElementById('cfgBuffer').value = CONFIG.buffer;
+  document.getElementById('cfgRefillBuffer').value = CONFIG.refillBuffer;
+  document.getElementById('cfgMaxMlDose').value = CONFIG.maxMlDose;
+  document.getElementById('cfgMinRefillDays').value = CONFIG.minRefillDays;
+}
+function saveConfig(){
+  CONFIG.buffer = parseFloat(document.getElementById('cfgBuffer').value) || 0;
+  CONFIG.refillBuffer = parseInt(document.getElementById('cfgRefillBuffer').value) || 0;
+  CONFIG.maxMlDose = parseFloat(document.getElementById('cfgMaxMlDose').value) || 20;
+  CONFIG.minRefillDays = parseInt(document.getElementById('cfgMinRefillDays').value) || 5;
+  saveConfigDb();
+  audit('แก้ไขการตั้งค่า', `buffer=${CONFIG.buffer}% · refillBuffer=${CONFIG.refillBuffer}d`);
+  alert('บันทึกแล้ว');
+}
+function resetConfig(){
+  if(!confirm('คืนค่าเริ่มต้นทั้งหมด?')) return;
+  CONFIG = {...DEFAULT_CONFIG};
+  saveConfigDb(); renderConfig();
+  audit('คืนค่าเริ่มต้น', 'การตั้งค่า');
+}
+
+// ============================================================
+// AUDIT TAB
+// ============================================================
+function renderAudit(){
+  if(AUDIT.length === 0){ document.getElementById('auditList').innerHTML = '<div class="empty">ยังไม่มีบันทึก</div>'; return; }
+  document.getElementById('auditList').innerHTML = AUDIT.map(a => {
+    const dt = new Date(a.ts);
+    const tStr = `${dt.toLocaleDateString('th-TH')} ${dt.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}`;
+    return `<div class="audit-row">
+      <div class="ts">${tStr}</div>
+      <div class="act">${a.action}</div>
+      <div>${a.detail}</div>
+      <div></div>
+    </div>`;
+  }).join('');
+}
+function clearAudit(){
+  if(!confirm('ล้างบันทึกทั้งหมด?')) return;
+  AUDIT = []; saveAuditDb(); renderAudit();
+}
+
+// ============================================================
+// SLIP / ใบนัดรับยา (A4)
+// ============================================================
+const THAI_MONTHS = ['','มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน',
+                     'กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+
+function fmtDateThaiLong(d){
+  const dt = (d instanceof Date) ? d : parseYmd(d);
+  return `${dt.getDate()} ${THAI_MONTHS[dt.getMonth()+1]} ${dt.getFullYear()+543}`;
+}
+
+function generateDocNo(){
+  // IPD-YYMMDD-XXX  (running number ต่อวัน)
+  const d = new Date();
+  const yy = String(d.getFullYear()).slice(-2);
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const dd = String(d.getDate()).padStart(2,'0');
+  const dateKey = `${yy}${mm}${dd}`;
+  const stored = JSON.parse(localStorage.getItem('pcs_slip_seq') || '{}');
+  const next = (stored[dateKey] || 0) + 1;
+  stored[dateKey] = next;
+  // เก็บเฉพาะ 30 วันล่าสุด เพื่อไม่ให้บวม
+  const keys = Object.keys(stored).sort();
+  if(keys.length > 30){ keys.slice(0, keys.length-30).forEach(k => delete stored[k]); }
+  localStorage.setItem('pcs_slip_seq', JSON.stringify(stored));
+  return `IPD-${dateKey}-${String(next).padStart(3,'0')}`;
+}
+
+function freqToAbbrev(freq){
+  const map = {1:'OD', 2:'BID', 3:'TID', 4:'QID', 6:'q4h'};
+  return map[freq] || `${freq}×/วัน`;
+}
+
+let CURRENT_DOC_NO = null;
+
+function openSlipModal(){
+  if(!LAST_RESULT){
+    alert('กรุณาคำนวณก่อน');
+    return;
+  }
+  // generate doc no ครั้งเดียวต่อการเปิด modal
+  CURRENT_DOC_NO = generateDocNo();
+  document.getElementById('slipDocNo').value = CURRENT_DOC_NO;
+  // sync ค่าเดิม (เคลียร์ phone/pharmacist ทุกครั้งที่เปิด)
+  document.getElementById('slipPhone').value = '';
+  document.getElementById('slipPharmacistOut').value = '';
+  refreshSlip();
+  document.getElementById('slipModal').classList.add('show');
+  audit('สร้างใบนัด', `${CURRENT_DOC_NO} · ${LAST_RESULT.input.patientName || '(ไม่ระบุชื่อ)'}`);
+}
+
+function closeSlipModal(){
+  document.getElementById('slipModal').classList.remove('show');
+  document.body.classList.remove('printing-slip');
+}
+
+function refreshSlip(){
+  if(!LAST_RESULT) return;
+  const r = LAST_RESULT;
+  const drug = r.input.drug;
+  const sched = r.schedule.schedule;
+
+  // header
+  const docNo = document.getElementById('slipDocNo').value.trim() || CURRENT_DOC_NO || '—';
+  document.getElementById('sDocNo').textContent = docNo;
+  document.getElementById('sFooterRef').textContent = `เอกสาร ${docNo}`;
+  const today = fmtDateThaiLong(new Date());
+  document.getElementById('sIssueDate').textContent = today;
+  document.getElementById('sIssueDate2').textContent = `วันที่ออกใบ: ${today}`;
+
+  // patient
+  setSlipField('sPatientName', r.input.patientName);
+  setSlipField('sHN', r.input.patientHN);
+  setSlipField('sPhone', document.getElementById('slipPhone').value.trim());
+  document.getElementById('sApptDoc').textContent = fmtDateThaiLong(parseYmd(r.input.appointmentDate));
+  document.getElementById('sApptDoc').classList.remove('empty');
+
+  // วันนัดรับยาครั้งถัดไป = visit ที่ 2 ถ้ามี (visit 1 คือวันนี้ที่จ่ายไปแล้ว)
+  if(sched.length > 1){
+    document.getElementById('sApptPickup').textContent = fmtDateThaiLong(sched[1].date);
+    document.getElementById('sApptPickup').classList.remove('empty');
+  } else {
+    document.getElementById('sApptPickup').textContent = 'จ่ายยาครบในครั้งเดียว';
+    document.getElementById('sApptPickup').classList.add('empty');
+  }
+
+  // pharmacist out
+  const pharmOut = document.getElementById('slipPharmacistOut').value.trim();
+  setSlipField('sPharmOut', pharmOut);
+
+  // ตารางรายการยา — 1 ใบรวมทุก visit
+  // แต่ละ row = 1 visit (เพราะยาเดียวกัน แค่ visit ต่างกัน)
+  const tbody = document.getElementById('sItems');
+  tbody.innerHTML = '';
+  const doseStr = `${r.input.mlPerDose.toFixed(2)} mL × ${r.input.freq} ครั้ง/วัน (${freqToAbbrev(r.input.freq)})`;
+  const concStr = `${drug.conc} mg/mL · ขนาดบรรจุ ${drug.size} mL/ขวด`;
+
+  sched.forEach((v, i) => {
+    const isToday = i === 0;
+    const visitLabel = isToday ? 'รับวันนี้' : `นัดรับ ${fmtDateThaiLong(v.date)}`;
+    const expStr = `ใช้ก่อน ${fmtDateThaiLong(v.expiryDate)}`;
+    const visitDateStr = fmtDateThaiLong(v.date);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="col-no">${i+1}</td>
+      <td class="col-drug">
+        <b>${drug.name}</b>
+        <small>${concStr}</small>
+        <small>ขนาดต่อครั้ง: <b>${r.input.mlPerDose.toFixed(2)} mL</b> × ${r.input.freq} ครั้ง/วัน (${freqToAbbrev(r.input.freq)})</small>
+      </td>
+      <td class="col-qty">
+        <b>${v.bottles} ขวด</b><br>
+        <small style="font-weight:400;color:#555;font-size:9.5pt">ครอบคลุม ${v.coversDays} วัน</small>
+      </td>
+      <td class="col-note">
+        ${visitLabel}<br>
+        <small>${expStr}</small>
+      </td>
+      <td class="col-sig">
+        <div class="sig-cell">
+          <div class="sig-line-inline"></div>
+          <div class="sig-hint">วันที่จ่ายจริง: ____/____/______</div>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // summary
+  const totalBottles = sched.reduce((s,v) => s+v.bottles, 0);
+  const summary = document.getElementById('sSummary');
+  if(sched.length > 1){
+    summary.style.display = 'block';
+    summary.innerHTML = `รวมทั้งหมด <b>${totalBottles} ขวด</b> · แบ่งจ่าย <b>${sched.length} ครั้ง</b> · ระยะเวลาทั้งคอร์ส ${r.input.totalDays} วัน`;
+  } else {
+    summary.style.display = 'block';
+    summary.innerHTML = `รวม <b>${totalBottles} ขวด</b> · ครอบคลุม ${r.input.totalDays} วัน · จ่ายครบในครั้งเดียว`;
+  }
+}
+
+function setSlipField(id, val){
+  const el = document.getElementById(id);
+  if(val && val.trim && val.trim()){
+    el.textContent = val;
+    el.classList.remove('empty');
+  } else if(val && !val.trim){
+    el.textContent = val;
+    el.classList.remove('empty');
+  } else {
+    el.textContent = '—';
+    el.classList.add('empty');
+  }
+}
+
+function printSlip(){
+  if(!LAST_RESULT){
+    alert('ยังไม่มีข้อมูล กรุณา preview ก่อน');
+    return;
+  }
+  // refresh ก่อนพิมพ์ (เผื่อแก้ไขฟิลด์)
+  refreshSlip();
+
+  // เพิ่ม class เพื่อ trigger CSS print mode
+  document.body.classList.add('printing-slip');
+
+  // scroll ขึ้นบน + ปิด modal scroll position
+  const slipModal = document.getElementById('slipModal');
+  slipModal.scrollTop = 0;
+  window.scrollTo(0, 0);
+
+  // ใช้ afterprint event เพื่อล้าง class หลังพิมพ์ (เสถียรกว่า setTimeout)
+  const cleanup = () => {
+    document.body.classList.remove('printing-slip');
+    window.removeEventListener('afterprint', cleanup);
+  };
+  window.addEventListener('afterprint', cleanup);
+
+  // เผื่อ browser ไม่ fire afterprint ให้ fallback ลบหลัง 3 วิ
+  setTimeout(() => {
+    if(document.body.classList.contains('printing-slip')){
+      document.body.classList.remove('printing-slip');
+    }
+  }, 3000);
+
+  // รอ render frame ก่อนเรียก print
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      window.print();
+    });
+  });
+
+  audit('พิมพ์ใบนัด', `${CURRENT_DOC_NO || '?'}`);
+}
+
+// ============================================================
+// PRINT SLIP IN NEW WINDOW — fallback ที่เสถียรที่สุด
+// ใช้กรณีที่ print โหมดปกติเพี้ยน (เพราะ CSS ของหน้าหลักรบกวน)
+// ============================================================
+function printSlipNewWindow(){
+  if(!LAST_RESULT){
+    alert('ยังไม่มีข้อมูล กรุณา preview ก่อน');
+    return;
+  }
+  refreshSlip();
+
+  // copy slip-paper HTML
+  const slipPaper = document.getElementById('slipPaper').outerHTML;
+
+  // CSS ที่จำเป็นสำหรับ slip — copy จาก main (A4)
+  const slipCss = `
+    @page{size:A4 portrait;margin:0}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Sarabun',sans-serif;background:white;color:#1a1a1a;margin:0;padding:0}
+    .slip-paper{
+      width:210mm;min-height:295mm;
+      background:white;margin:0 auto;
+      padding:18mm 18mm 16mm 18mm;
+      font-size:13pt;line-height:1.55;
+      position:relative;box-sizing:border-box;
+    }
+    .slip-watermark{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-28deg);font-size:90pt;font-weight:700;color:rgba(120,90,80,0.05);pointer-events:none;white-space:nowrap;letter-spacing:0.05em;z-index:0}
+    .slip-paper > *{position:relative;z-index:1}
+    .slip-corner{position:absolute;top:0;left:0;width:54mm;height:6mm;background:linear-gradient(90deg,#7a3a3a,#c47373);z-index:2}
+    .slip-corner.right{left:auto;right:0;background:linear-gradient(90deg,#c47373,#7a3a3a)}
+    .slip-header{text-align:center;margin-bottom:7mm;padding-top:4mm}
+    .slip-header .doc-no{font-size:10.5pt;color:#666;text-align:right;margin-bottom:3mm;font-feature-settings:'tnum'}
+    .slip-header h1{font-family:'Sarabun',sans-serif;font-size:26pt;font-weight:700;letter-spacing:0.04em;color:#1a1a1a;margin-bottom:2mm}
+    .slip-header .hospital{font-size:15pt;font-weight:600;color:#333}
+    .slip-header .contact{font-size:11.5pt;color:#555;margin-top:1.5mm;line-height:1.4}
+    .slip-header .pickup-time{font-size:11.5pt;color:#7a3a3a;font-weight:600;margin-top:1.5mm}
+    .slip-divider{border:none;border-top:0.7pt solid #999;margin:5mm 0}
+    .slip-patient{margin-bottom:5mm}
+    .slip-patient-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5mm 12mm;font-size:12.5pt}
+    .slip-patient-grid .field{display:flex;gap:4mm;align-items:baseline;padding:1.6mm 0;border-bottom:0.4pt dotted #bbb}
+    .slip-patient-grid .field-full{grid-column:span 2}
+    .slip-patient-grid .lbl{color:#555;flex-shrink:0;font-weight:500}
+    .slip-patient-grid .val{font-weight:600;color:#000;flex:1}
+    .slip-patient-grid .val.empty{color:#999;font-weight:400;font-style:italic}
+    .slip-section-title{font-size:13pt;font-weight:700;color:#1a1a1a;margin:5mm 0 2.5mm;padding-bottom:1.5mm;border-bottom:0.7pt solid #555;letter-spacing:0.02em}
+    .slip-table{width:100%;border-collapse:collapse;font-size:11.5pt;margin-bottom:4mm}
+    .slip-table thead th{background:#f3ebe1;border:0.5pt solid #888;padding:2.8mm 3mm;text-align:left;font-weight:700;font-size:11pt;color:#1a1a1a}
+    .slip-table tbody td{border:0.5pt solid #aaa;padding:3mm 3mm;vertical-align:top;word-break:break-word}
+    .slip-table .col-no{width:11mm;text-align:center}
+    .slip-table .col-qty{width:36mm;text-align:right;font-feature-settings:'tnum';font-weight:600}
+    .slip-table .col-note{width:42mm;font-size:10.5pt;color:#444}
+    .slip-table .col-sig{width:42mm;text-align:center;vertical-align:middle}
+    .slip-table .col-drug{font-weight:500}
+    .slip-table .col-drug small{display:block;font-size:10pt;color:#666;font-weight:400;margin-top:0.8mm}
+    .slip-table .sig-cell{min-height:14mm;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding-bottom:1.5mm}
+    .slip-table .sig-line-inline{width:90%;border-bottom:0.6pt solid #555;height:9mm}
+    .slip-table .sig-hint{font-size:8.5pt;color:#888;margin-top:1mm;font-weight:400}
+    .slip-summary-line{font-size:11.5pt;color:#444;margin-top:3mm;padding:2.5mm 4mm;background:#fbf6ef;border-left:2.5pt solid #c47373;font-style:italic}
+    .slip-instructions{margin-top:7mm;font-size:11.5pt;color:#333;line-height:1.7}
+    .slip-instructions b{font-size:12pt;color:#1a1a1a;display:block;margin-bottom:2mm}
+    .slip-instructions ul{padding-left:7mm;margin:0}
+    .slip-instructions li{margin-bottom:1mm}
+    .slip-signatures{margin-top:auto;padding-top:12mm;display:grid;grid-template-columns:1fr 1fr;gap:12mm;font-size:11.5pt}
+    .slip-sig-block{text-align:center}
+    .slip-sig-line{border-bottom:0.7pt solid #555;height:14mm;margin-bottom:2mm}
+    .slip-sig-label{color:#555;font-size:11pt}
+    .slip-sig-name{color:#1a1a1a;font-weight:500;font-size:12pt;margin-bottom:0.5mm}
+    .slip-sig-date{color:#666;font-size:10pt;margin-top:1mm}
+    .slip-footer-meta{margin-top:5mm;padding-top:2.5mm;border-top:0.4pt dotted #aaa;font-size:9.5pt;color:#777;display:flex;justify-content:space-between}
+    .slip-paper-flex{display:flex;flex-direction:column;min-height:260mm}
+    .slip-paper-flex .slip-content{flex:1}
+  `;
+
+  const html = `<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>ใบนัดรับยา ${CURRENT_DOC_NO || ''}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>${slipCss}</style>
+</head>
+<body>
+${slipPaper}
+<script>
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    window.focus();
+    window.print();
+  }, 400);
+  window.addEventListener('afterprint', () => {
+    setTimeout(() => window.close(), 300);
+  });
+});
+<\/script>
+</body>
+</html>`;
+
+  const w = window.open('', '_blank', 'width=600,height=800');
+  if(!w){
+    alert('กรุณาอนุญาต popup สำหรับเว็บนี้ในเบราว์เซอร์');
+    return;
+  }
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+  audit('พิมพ์ใบนัด (window)', `${CURRENT_DOC_NO || '?'}`);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function init(){
+  loadState();
+  populateDrugs();
+  setToday();
+  document.getElementById('todayDisplay').textContent = fmtDateShort(new Date());
+  updateDoseUnit();
+}
+init();
+</script>
+</body>
+</html>

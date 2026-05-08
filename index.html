@@ -193,13 +193,20 @@ input:disabled{background:var(--line-soft);color:var(--ink-faint);cursor:not-all
 .slip-extra-fields label{font-size:13px;margin-bottom:5px}
 .slip-extra-fields input{font-size:14.5px;padding:9px 11px;min-height:auto}
 
-/* A4 paper canvas */
+/* ===========================================================
+   PRINT-PAGE CONTAINER — A4 portrait content area
+   ===========================================================
+   รูปแบบ: page = 210x297mm, @page margin = 10mm
+   → content area = 190x277mm (ไม่มี padding ภายใน)
+   วิธีนี้ browser ไม่ scale เพราะเนื้อหาไม่ล้น page
+   =========================================================== */
 .slip-paper{
-  width:210mm;
-  min-height:297mm;
+  /* content area ของ A4 หลังหัก @page margin 10mm รอบด้าน */
+  width:190mm;
+  min-height:277mm;
   background:white;
   margin:0 auto;
-  padding:18mm 18mm 16mm 18mm;
+  padding:0;
   box-shadow:0 8px 40px rgba(0,0,0,0.25);
   font-family:'Sarabun',sans-serif;
   color:#1a1a1a;
@@ -207,6 +214,9 @@ input:disabled{background:var(--line-soft);color:var(--ink-faint);cursor:not-all
   font-size:13pt;
   line-height:1.55;
   box-sizing:border-box;
+  /* ใช้ flex column เพื่อให้ลายเซ็นไปอยู่ก้นกระดาษ */
+  display:flex;
+  flex-direction:column;
 }
 .slip-watermark{
   position:absolute;
@@ -223,116 +233,142 @@ input:disabled{background:var(--line-soft);color:var(--ink-faint);cursor:not-all
 }
 .slip-paper > *{position:relative;z-index:1}
 
-.slip-corner{position:absolute;top:0;left:0;width:54mm;height:6mm;background:linear-gradient(90deg,#7a3a3a,#c47373);z-index:2}
+.slip-corner{position:absolute;top:0;left:0;width:48mm;height:5mm;background:linear-gradient(90deg,#7a3a3a,#c47373);z-index:2}
 .slip-corner.right{left:auto;right:0;background:linear-gradient(90deg,#c47373,#7a3a3a)}
 
-.slip-header{text-align:center;margin-bottom:7mm;padding-top:4mm}
-.slip-header .doc-no{font-size:10.5pt;color:#666;text-align:right;margin-bottom:3mm;font-feature-settings:'tnum'}
-.slip-header h1{font-family:'Sarabun',sans-serif;font-size:26pt;font-weight:700;letter-spacing:0.04em;color:#1a1a1a;margin-bottom:2mm}
-.slip-header .hospital{font-size:15pt;font-weight:600;color:#333}
-.slip-header .contact{font-size:11.5pt;color:#555;margin-top:1.5mm;line-height:1.4}
-.slip-header .pickup-time{font-size:11.5pt;color:#7a3a3a;font-weight:600;margin-top:1.5mm}
-.slip-divider{border:none;border-top:0.7pt solid #999;margin:5mm 0}
+.slip-header{text-align:center;margin-bottom:6mm;padding-top:3mm}
+.slip-header .doc-no{font-size:10pt;color:#666;text-align:right;margin-bottom:2.5mm;font-feature-settings:'tnum'}
+.slip-header h1{font-family:'Sarabun',sans-serif;font-size:24pt;font-weight:700;letter-spacing:0.04em;color:#1a1a1a;margin-bottom:2mm}
+.slip-header .hospital{font-size:14pt;font-weight:600;color:#333}
+.slip-header .contact{font-size:11pt;color:#555;margin-top:1.5mm;line-height:1.4}
+.slip-header .pickup-time{font-size:11pt;color:#7a3a3a;font-weight:600;margin-top:1.5mm}
+.slip-divider{border:none;border-top:0.7pt solid #999;margin:4mm 0}
 
-.slip-patient{margin-bottom:5mm}
-.slip-patient-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5mm 12mm;font-size:12.5pt}
-.slip-patient-grid .field{display:flex;gap:4mm;align-items:baseline;padding:1.6mm 0;border-bottom:0.4pt dotted #bbb}
+.slip-patient{margin-bottom:4mm}
+.slip-patient-grid{display:grid;grid-template-columns:1fr 1fr;gap:2mm 10mm;font-size:12pt}
+.slip-patient-grid .field{display:flex;gap:4mm;align-items:baseline;padding:1.4mm 0;border-bottom:0.4pt dotted #bbb}
 .slip-patient-grid .field-full{grid-column:span 2}
 .slip-patient-grid .lbl{color:#555;flex-shrink:0;font-weight:500}
 .slip-patient-grid .val{font-weight:600;color:#000;flex:1}
 .slip-patient-grid .val.empty{color:#999;font-weight:400;font-style:italic}
 
-.slip-section-title{font-size:13pt;font-weight:700;color:#1a1a1a;margin:5mm 0 2.5mm;padding-bottom:1.5mm;border-bottom:0.7pt solid #555;letter-spacing:0.02em}
+.slip-section-title{font-size:13pt;font-weight:700;color:#1a1a1a;margin:4mm 0 2mm;padding-bottom:1.2mm;border-bottom:0.7pt solid #555;letter-spacing:0.02em}
 
-.slip-table{width:100%;border-collapse:collapse;font-size:11.5pt;margin-bottom:4mm}
+.slip-table{width:100%;border-collapse:collapse;font-size:11pt;margin-bottom:3mm;table-layout:fixed}
 .slip-table thead th{
   background:#f3ebe1;
   border:0.5pt solid #888;
-  padding:2.8mm 3mm;
+  padding:2.5mm 2.5mm;
   text-align:left;
   font-weight:700;
-  font-size:11pt;
+  font-size:10.5pt;
   color:#1a1a1a;
 }
 .slip-table tbody td{
   border:0.5pt solid #aaa;
-  padding:3mm 3mm;
+  padding:2.5mm 2.5mm;
   vertical-align:top;
   word-break:break-word;
 }
-.slip-table .col-no{width:11mm;text-align:center}
-.slip-table .col-qty{width:36mm;text-align:right;font-feature-settings:'tnum';font-weight:600}
-.slip-table .col-note{width:42mm;font-size:10.5pt;color:#444}
-.slip-table .col-sig{width:42mm;text-align:center;vertical-align:middle}
+.slip-table .col-no{width:10mm;text-align:center}
+.slip-table .col-qty{width:32mm;text-align:right;font-feature-settings:'tnum';font-weight:600}
+.slip-table .col-note{width:36mm;font-size:10pt;color:#444}
+.slip-table .col-sig{width:38mm;text-align:center;vertical-align:middle}
 .slip-table .col-drug{font-weight:500}
-.slip-table .col-drug small{display:block;font-size:10pt;color:#666;font-weight:400;margin-top:0.8mm}
+.slip-table .col-drug small{display:block;font-size:9.5pt;color:#666;font-weight:400;margin-top:0.6mm}
 .slip-table .sig-cell{
-  min-height:14mm;
+  min-height:13mm;
   display:flex;
   flex-direction:column;
   justify-content:flex-end;
   align-items:center;
-  padding-bottom:1.5mm;
+  padding-bottom:1mm;
 }
 .slip-table .sig-line-inline{
   width:90%;
   border-bottom:0.6pt solid #555;
-  height:9mm;
+  height:8mm;
 }
 .slip-table .sig-hint{
-  font-size:8.5pt;
+  font-size:8pt;
   color:#888;
-  margin-top:1mm;
+  margin-top:0.8mm;
   font-weight:400;
 }
 
-.slip-summary-line{font-size:11.5pt;color:#444;margin-top:3mm;padding:2.5mm 4mm;background:#fbf6ef;border-left:2.5pt solid #c47373;font-style:italic}
+.slip-summary-line{font-size:11pt;color:#444;margin-top:2.5mm;padding:2mm 3.5mm;background:#fbf6ef;border-left:2.5pt solid #c47373;font-style:italic}
 
-.slip-instructions{margin-top:7mm;font-size:11.5pt;color:#333;line-height:1.7}
-.slip-instructions b{font-size:12pt;color:#1a1a1a;display:block;margin-bottom:2mm}
-.slip-instructions ul{padding-left:7mm;margin:0}
-.slip-instructions li{margin-bottom:1mm}
+.slip-instructions{margin-top:5mm;font-size:11pt;color:#333;line-height:1.65}
+.slip-instructions b{font-size:11.5pt;color:#1a1a1a;display:block;margin-bottom:1.5mm}
+.slip-instructions ul{padding-left:6mm;margin:0}
+.slip-instructions li{margin-bottom:0.8mm}
 
 .slip-signatures{
   margin-top:auto;
-  padding-top:12mm;
+  padding-top:8mm;
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:12mm;
-  font-size:11.5pt;
+  gap:10mm;
+  font-size:11pt;
 }
 .slip-sig-block{text-align:center}
-.slip-sig-line{border-bottom:0.7pt solid #555;height:14mm;margin-bottom:2mm}
-.slip-sig-label{color:#555;font-size:11pt}
-.slip-sig-name{color:#1a1a1a;font-weight:500;font-size:12pt;margin-bottom:0.5mm}
-.slip-sig-date{color:#666;font-size:10pt;margin-top:1mm}
+.slip-sig-line{border-bottom:0.7pt solid #555;height:12mm;margin-bottom:1.5mm}
+.slip-sig-label{color:#555;font-size:10.5pt}
+.slip-sig-name{color:#1a1a1a;font-weight:500;font-size:11.5pt;margin-bottom:0.5mm}
+.slip-sig-date{color:#666;font-size:9.5pt;margin-top:0.8mm}
 
 .slip-footer-meta{
-  margin-top:5mm;
-  padding-top:2.5mm;
+  margin-top:3.5mm;
+  padding-top:2mm;
   border-top:0.4pt dotted #aaa;
-  font-size:9.5pt;
+  font-size:9pt;
   color:#777;
   display:flex;
   justify-content:space-between;
 }
-.slip-paper-flex{display:flex;flex-direction:column;min-height:260mm}
+.slip-paper-flex{
+  display:flex;
+  flex-direction:column;
+  flex:1;
+  width:100%;
+  /* padding ภายใน content area — แทน padding ของ slip-paper */
+  padding:8mm 6mm 6mm 6mm;
+  box-sizing:border-box;
+}
 .slip-paper-flex .slip-content{flex:1}
 
-/* PRINT — เฉพาะใบนัด */
+/* ===========================================================
+   PRINT MEDIA — Standard A4 printing
+   ===========================================================
+   หลักการ:
+   - @page ตั้ง margin = 10mm (browser จะ honor margin นี้)
+   - .slip-paper width = 190mm (เท่ากับ A4 width - margin)
+   - ไม่มี transform:scale, zoom, % units
+   - ใช้ mm ทั้งหมด → ไม่ถูก browser ย่อ
+   =========================================================== */
 @media print{
-  @page{size:A4 portrait;margin:0}
+  @page{
+    size:A4 portrait;
+    margin:10mm;
+  }
 
-  /* เมื่ออยู่ในโหมดพิมพ์ใบนัด — ซ่อนทุกอย่างยกเว้น slip-paper */
-  body.printing-slip{
-    background:white !important;
+  body{
     margin:0 !important;
     padding:0 !important;
+    background:white !important;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+
+  /* โหมดพิมพ์ใบนัด */
+  body.printing-slip{
+    margin:0 !important;
+    padding:0 !important;
+    background:white !important;
   }
   body.printing-slip .app{display:none !important}
   body.printing-slip > *:not(#slipModal){display:none !important}
 
-  /* แสดง slip-modal โดยไม่สนใจ .show class */
   body.printing-slip .slip-modal{
     display:block !important;
     position:static !important;
@@ -349,28 +385,38 @@ input:disabled{background:var(--line-soft);color:var(--ink-faint);cursor:not-all
     padding:0 !important;
   }
   body.printing-slip .slip-toolbar,
-  body.printing-slip .slip-extra-fields{
+  body.printing-slip .slip-extra-fields,
+  body.printing-slip .no-print{
     display:none !important;
   }
 
-  /* slip-paper ที่จะถูกพิมพ์จริง */
+  /* slip-paper = ใบที่จะถูกพิมพ์ */
   body.printing-slip .slip-paper{
-    display:block !important;
+    display:flex !important;
+    flex-direction:column !important;
     box-shadow:none !important;
-    margin:0 !important;
-    width:210mm !important;
-    min-height:295mm !important;
+    margin:0 auto !important;
+    width:190mm !important;
+    min-height:277mm !important;
+    max-width:190mm !important;
     page-break-after:avoid !important;
     page-break-inside:avoid !important;
     position:relative !important;
+    overflow:hidden !important;
   }
-  body.printing-slip .slip-watermark{color:rgba(120,90,80,0.04) !important}
-
-  /* ห้าม print rules ของระบบเดิมส่งผลตอนพิมพ์ใบนัด */
-  body.printing-slip header.brand,
-  body.printing-slip nav.tabs,
-  body.printing-slip .card,
-  body.printing-slip .tab-content{display:none !important}
+  body.printing-slip .slip-watermark{
+    color:rgba(120,90,80,0.05) !important;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+  body.printing-slip .slip-corner{
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+  body.printing-slip .slip-table thead th{
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
 }
 
 /* PRINT — โหมดปกติ (ใบสรุปเดิม) เมื่อไม่ใช่ printing-slip */
@@ -1751,63 +1797,124 @@ function printSlipNewWindow(){
   // copy slip-paper HTML
   const slipPaper = document.getElementById('slipPaper').outerHTML;
 
-  // CSS ที่จำเป็นสำหรับ slip — copy จาก main (A4)
+  // ============================================================
+  // CSS สำหรับ slip — Standard A4 print model
+  // ============================================================
+  // - @page margin: 10mm (browser ใช้ค่านี้เป็น margin จริง)
+  // - .slip-paper width: 190mm (= A4 width 210 - margin 20)
+  // - min-height: 277mm (= A4 height 297 - margin 20)
+  // - ใช้ mm หน่วยเดียว ไม่มี % / transform / zoom
+  // - browser ไม่ scale เพราะเนื้อหาไม่ล้น page
+  // ============================================================
   const slipCss = `
-    @page{size:A4 portrait;margin:0}
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Sarabun',sans-serif;background:white;color:#1a1a1a;margin:0;padding:0}
-    .slip-paper{
-      width:210mm;min-height:295mm;
-      background:white;margin:0 auto;
-      padding:18mm 18mm 16mm 18mm;
-      font-size:13pt;line-height:1.55;
-      position:relative;box-sizing:border-box;
+    @page{
+      size:A4 portrait;
+      margin:10mm;
     }
-    .slip-watermark{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-28deg);font-size:90pt;font-weight:700;color:rgba(120,90,80,0.05);pointer-events:none;white-space:nowrap;letter-spacing:0.05em;z-index:0}
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{
+      margin:0;
+      padding:0;
+      background:white;
+      color:#1a1a1a;
+      font-family:'Sarabun',sans-serif;
+      -webkit-print-color-adjust:exact;
+      print-color-adjust:exact;
+    }
+
+    /* PRINT-PAGE CONTAINER */
+    .slip-paper{
+      width:190mm;
+      min-height:277mm;
+      max-width:190mm;
+      background:white;
+      margin:0 auto;
+      padding:0;
+      font-size:13pt;
+      line-height:1.55;
+      position:relative;
+      box-sizing:border-box;
+      display:flex;
+      flex-direction:column;
+      page-break-after:avoid;
+      page-break-inside:avoid;
+      overflow:hidden;
+    }
+    .slip-watermark{
+      position:absolute;top:50%;left:50%;
+      transform:translate(-50%,-50%) rotate(-28deg);
+      font-size:80pt;font-weight:700;
+      color:rgba(120,90,80,0.05);
+      pointer-events:none;
+      white-space:nowrap;
+      letter-spacing:0.05em;
+      z-index:0;
+    }
     .slip-paper > *{position:relative;z-index:1}
-    .slip-corner{position:absolute;top:0;left:0;width:54mm;height:6mm;background:linear-gradient(90deg,#7a3a3a,#c47373);z-index:2}
+
+    /* มุมประดับสไตล์ hospital modern */
+    .slip-corner{position:absolute;top:0;left:0;width:48mm;height:5mm;background:linear-gradient(90deg,#7a3a3a,#c47373);z-index:2}
     .slip-corner.right{left:auto;right:0;background:linear-gradient(90deg,#c47373,#7a3a3a)}
-    .slip-header{text-align:center;margin-bottom:7mm;padding-top:4mm}
-    .slip-header .doc-no{font-size:10.5pt;color:#666;text-align:right;margin-bottom:3mm;font-feature-settings:'tnum'}
-    .slip-header h1{font-family:'Sarabun',sans-serif;font-size:26pt;font-weight:700;letter-spacing:0.04em;color:#1a1a1a;margin-bottom:2mm}
-    .slip-header .hospital{font-size:15pt;font-weight:600;color:#333}
-    .slip-header .contact{font-size:11.5pt;color:#555;margin-top:1.5mm;line-height:1.4}
-    .slip-header .pickup-time{font-size:11.5pt;color:#7a3a3a;font-weight:600;margin-top:1.5mm}
-    .slip-divider{border:none;border-top:0.7pt solid #999;margin:5mm 0}
-    .slip-patient{margin-bottom:5mm}
-    .slip-patient-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5mm 12mm;font-size:12.5pt}
-    .slip-patient-grid .field{display:flex;gap:4mm;align-items:baseline;padding:1.6mm 0;border-bottom:0.4pt dotted #bbb}
+
+    /* CONTAINER ภายในกระดาษ — flex column ให้ลายเซ็นไปก้นกระดาษ */
+    .slip-paper-flex{
+      display:flex;flex-direction:column;flex:1;width:100%;
+      padding:8mm 6mm 6mm 6mm;
+      box-sizing:border-box;
+    }
+    .slip-paper-flex .slip-content{flex:1}
+
+    /* HEADER */
+    .slip-header{text-align:center;margin-bottom:6mm;padding-top:3mm}
+    .slip-header .doc-no{font-size:10pt;color:#666;text-align:right;margin-bottom:2.5mm;font-feature-settings:'tnum'}
+    .slip-header h1{font-size:24pt;font-weight:700;letter-spacing:0.04em;color:#1a1a1a;margin-bottom:2mm}
+    .slip-header .hospital{font-size:14pt;font-weight:600;color:#333}
+    .slip-header .contact{font-size:11pt;color:#555;margin-top:1.5mm;line-height:1.4}
+    .slip-header .pickup-time{font-size:11pt;color:#7a3a3a;font-weight:600;margin-top:1.5mm}
+    .slip-divider{border:none;border-top:0.7pt solid #999;margin:4mm 0}
+
+    /* PATIENT INFO */
+    .slip-patient{margin-bottom:4mm}
+    .slip-patient-grid{display:grid;grid-template-columns:1fr 1fr;gap:2mm 10mm;font-size:12pt}
+    .slip-patient-grid .field{display:flex;gap:4mm;align-items:baseline;padding:1.4mm 0;border-bottom:0.4pt dotted #bbb}
     .slip-patient-grid .field-full{grid-column:span 2}
     .slip-patient-grid .lbl{color:#555;flex-shrink:0;font-weight:500}
     .slip-patient-grid .val{font-weight:600;color:#000;flex:1}
     .slip-patient-grid .val.empty{color:#999;font-weight:400;font-style:italic}
-    .slip-section-title{font-size:13pt;font-weight:700;color:#1a1a1a;margin:5mm 0 2.5mm;padding-bottom:1.5mm;border-bottom:0.7pt solid #555;letter-spacing:0.02em}
-    .slip-table{width:100%;border-collapse:collapse;font-size:11.5pt;margin-bottom:4mm}
-    .slip-table thead th{background:#f3ebe1;border:0.5pt solid #888;padding:2.8mm 3mm;text-align:left;font-weight:700;font-size:11pt;color:#1a1a1a}
-    .slip-table tbody td{border:0.5pt solid #aaa;padding:3mm 3mm;vertical-align:top;word-break:break-word}
-    .slip-table .col-no{width:11mm;text-align:center}
-    .slip-table .col-qty{width:36mm;text-align:right;font-feature-settings:'tnum';font-weight:600}
-    .slip-table .col-note{width:42mm;font-size:10.5pt;color:#444}
-    .slip-table .col-sig{width:42mm;text-align:center;vertical-align:middle}
+
+    .slip-section-title{font-size:13pt;font-weight:700;color:#1a1a1a;margin:4mm 0 2mm;padding-bottom:1.2mm;border-bottom:0.7pt solid #555;letter-spacing:0.02em}
+
+    /* TABLE */
+    .slip-table{width:100%;border-collapse:collapse;font-size:11pt;margin-bottom:3mm;table-layout:fixed}
+    .slip-table thead th{background:#f3ebe1;border:0.5pt solid #888;padding:2.5mm 2.5mm;text-align:left;font-weight:700;font-size:10.5pt;color:#1a1a1a;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .slip-table tbody td{border:0.5pt solid #aaa;padding:2.5mm 2.5mm;vertical-align:top;word-break:break-word}
+    .slip-table .col-no{width:10mm;text-align:center}
+    .slip-table .col-qty{width:32mm;text-align:right;font-feature-settings:'tnum';font-weight:600}
+    .slip-table .col-note{width:36mm;font-size:10pt;color:#444}
+    .slip-table .col-sig{width:38mm;text-align:center;vertical-align:middle}
     .slip-table .col-drug{font-weight:500}
-    .slip-table .col-drug small{display:block;font-size:10pt;color:#666;font-weight:400;margin-top:0.8mm}
-    .slip-table .sig-cell{min-height:14mm;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding-bottom:1.5mm}
-    .slip-table .sig-line-inline{width:90%;border-bottom:0.6pt solid #555;height:9mm}
-    .slip-table .sig-hint{font-size:8.5pt;color:#888;margin-top:1mm;font-weight:400}
-    .slip-summary-line{font-size:11.5pt;color:#444;margin-top:3mm;padding:2.5mm 4mm;background:#fbf6ef;border-left:2.5pt solid #c47373;font-style:italic}
-    .slip-instructions{margin-top:7mm;font-size:11.5pt;color:#333;line-height:1.7}
-    .slip-instructions b{font-size:12pt;color:#1a1a1a;display:block;margin-bottom:2mm}
-    .slip-instructions ul{padding-left:7mm;margin:0}
-    .slip-instructions li{margin-bottom:1mm}
-    .slip-signatures{margin-top:auto;padding-top:12mm;display:grid;grid-template-columns:1fr 1fr;gap:12mm;font-size:11.5pt}
+    .slip-table .col-drug small{display:block;font-size:9.5pt;color:#666;font-weight:400;margin-top:0.6mm}
+    .slip-table .sig-cell{min-height:13mm;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding-bottom:1mm}
+    .slip-table .sig-line-inline{width:90%;border-bottom:0.6pt solid #555;height:8mm}
+    .slip-table .sig-hint{font-size:8pt;color:#888;margin-top:0.8mm;font-weight:400}
+
+    .slip-summary-line{font-size:11pt;color:#444;margin-top:2.5mm;padding:2mm 3.5mm;background:#fbf6ef;border-left:2.5pt solid #c47373;font-style:italic;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+
+    /* INSTRUCTIONS */
+    .slip-instructions{margin-top:5mm;font-size:11pt;color:#333;line-height:1.65}
+    .slip-instructions b{font-size:11.5pt;color:#1a1a1a;display:block;margin-bottom:1.5mm}
+    .slip-instructions ul{padding-left:6mm;margin:0}
+    .slip-instructions li{margin-bottom:0.8mm}
+
+    /* SIGNATURES — auto push ไปก้นกระดาษด้วย margin-top:auto */
+    .slip-signatures{margin-top:auto;padding-top:8mm;display:grid;grid-template-columns:1fr 1fr;gap:10mm;font-size:11pt}
     .slip-sig-block{text-align:center}
-    .slip-sig-line{border-bottom:0.7pt solid #555;height:14mm;margin-bottom:2mm}
-    .slip-sig-label{color:#555;font-size:11pt}
-    .slip-sig-name{color:#1a1a1a;font-weight:500;font-size:12pt;margin-bottom:0.5mm}
-    .slip-sig-date{color:#666;font-size:10pt;margin-top:1mm}
-    .slip-footer-meta{margin-top:5mm;padding-top:2.5mm;border-top:0.4pt dotted #aaa;font-size:9.5pt;color:#777;display:flex;justify-content:space-between}
-    .slip-paper-flex{display:flex;flex-direction:column;min-height:260mm}
-    .slip-paper-flex .slip-content{flex:1}
+    .slip-sig-line{border-bottom:0.7pt solid #555;height:12mm;margin-bottom:1.5mm}
+    .slip-sig-label{color:#555;font-size:10.5pt}
+    .slip-sig-name{color:#1a1a1a;font-weight:500;font-size:11.5pt;margin-bottom:0.5mm}
+    .slip-sig-date{color:#666;font-size:9.5pt;margin-top:0.8mm}
+
+    .slip-footer-meta{margin-top:3.5mm;padding-top:2mm;border-top:0.4pt dotted #aaa;font-size:9pt;color:#777;display:flex;justify-content:space-between}
   `;
 
   const html = `<!DOCTYPE html>
